@@ -1,14 +1,59 @@
-# MoodMuse
+# 🎨 MoodMuse – Ruh Haline Göre İlham Uygulaması
 
-**MoodMuse**, kullanıcıların ruh haline göre estetik ve ilham veren öneriler sunan, yapay zeka destekli bir web uygulamasıdır.
+**MoodMuse**, ruh haline göre kullanıcıya renk paletleri, müzik önerileri ve ilham verici içerikler sunan bir yapay zekâ destekli web uygulamasıdır.
 
-Bu proje, kullanıcıdan alınan bir duygu cümlesini analiz ederek, buna uygun renk paletleri, Spotify müzik listeleri ve ilham verici sözler önerir.
+## 💡 Özellikler
+- 🧠 AI tabanlı ruh hali analizi (Hugging Face veya OpenAI ile)
+- 🎨 Otomatik tema, renk ve estetik önerileri
+- 🔐 Kullanıcı girişi (auth sistemi)
+- 💾 SQLite ile veri saklama
+- 🧩 Modüler backend yapısı (FastAPI veya benzeri)
 
-## 🚀 Proje Yapısı
+## ⚙️ Teknoloji Yığını
 
-- **/backend**: FastAPI ile geliştirilen RESTful API.
-- **/frontend**: Next.js ile geliştirilen kullanıcı arayüzü.
+| Katman    | Teknoloji   |
+|-----------|-------------|
+| **Frontend** | Next.js (TypeScript) |
+| **Backend**  | Python (FastAPI benzeri yapı) |
+| **Veri**     | SQLite |
+| **AI Servisi** | `ai_service.py` üzerinden çalışıyor |
+| **Auth**    | JWT veya token tabanlı yapı (`auth.py`) |
 
-## 📋 Görevler
+## 📁 Dosya Yapısı
 
-Projenin detaylı görev listesi ve ilerlemesi için `TASKS.md` dosyasına bakabilirsiniz. 
+```
+frontend/     → Next.js arayüz  
+backend/      → Python API ve AI servisi  
+  ├── api/    → auth ve analysis endpointleri  
+  ├── core/   → AI servis ve config yapısı  
+  ├── db/     → CRUD, models ve database işlemleri  
+.env          → Ortam değişkenleri  
+```
+
+## 🚧 Durum
+Şu anda MVP aşamasında. Yakında:
+- Kullanıcı geçmişine göre öneri algoritması
+- Renk/müzik verilerinin kişiselleştirilmesi
+- Takvim entegrasyonu
+
+## 📌 Kurulum
+
+```bash
+# Backend
+cd backend
+pip install -r requirements.txt
+python main.py
+
+# Frontend
+cd frontend
+npm install
+npm run dev
+```
+
+
+## ✨ Katkı Sağla
+
+Pull request ve issue açarak projeye destek olabilirsin.  
+Geri bildirimler benim için çok değerli! 💌
+
+**Created with 💖 by [@ecenurkocak](https://github.com/ecenurkocak)**
