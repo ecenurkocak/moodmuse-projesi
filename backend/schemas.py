@@ -1,7 +1,7 @@
 import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl
 
 
 # ==============================================================================
@@ -57,6 +57,26 @@ class MoodEntry(MoodEntryBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class HistoryResponse(BaseModel):
+    total_entries: int
+    page: int
+    limit: int
+    data: list[MoodEntry]
+
+
+class AnalysisRequest(BaseModel):
+    text_input: str = Field(
+        ...,
+        description="The text input for which analysis is requested.",
+    )
+
+
+class AnalysisResponse(BaseModel):
+    color_palette: list[str]
+    spotify_playlist: str
+    inspirational_quote: str
+
+
 # ==============================================================================
 # User Şemaları
 # ==============================================================================
@@ -73,5 +93,13 @@ class User(UserBase):
     id: int
     created_at: datetime.datetime
     mood_entries: List[MoodEntry] = []
+
+    model_config = ConfigDict(from_attributes=True)
+    
+
+class UserResponse(UserBase):
+    """Kullanıcı oluşturulduğunda veya getirildiğinde döndürülecek, hassas olmayan verileri içeren model."""
+    id: int
+    created_at: datetime.datetime
 
     model_config = ConfigDict(from_attributes=True) 

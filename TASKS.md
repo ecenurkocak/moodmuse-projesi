@@ -44,7 +44,7 @@ Bu faz, uygulamanın temel mantığını ve veritabanı işlemlerini içerir.
     *   [x] Kullanıcı şifrelerini güvenli bir şekilde hash'leme (passlib kullanımı).
     *   [x] `POST /api/v1/auth/login` endpoint'ini oluşturma.
     *   [x] Başarılı girişte JWT (JSON Web Token) üretme.
-    *   [ ] Token doğrulaması yapacak bir middleware veya dependency oluşturma.
+    *   [x] Token doğrulaması yapacak bir middleware veya dependency oluşturma.
 
 *   **2.3. Ana İşlevsellik: Duygu Analizi ve Öneri Oluşturma**
     *   [x] `POST /api/v1/analyze` endpoint'ini (korumalı) oluşturma.
@@ -63,43 +63,43 @@ Bu faz, uygulamanın temel mantığını ve veritabanı işlemlerini içerir.
 Bu faz, kullanıcının etkileşime gireceği arayüzlerin geliştirilmesini kapsar.
 
 *   **3.1. Temel Sayfa ve Bileşenlerin (Component) Oluşturulması**
-    *   [ ] Ana layout (Navbar, Footer vb.) bileşenini oluşturma.
-    *   [ ] **Kayıt Ol (Register)** sayfası arayüzünü tasarlama (form elemanları).
-    *   [ ] **Giriş Yap (Login)** sayfası arayüzünü tasarlama (form elemanları).
-    *   [ ] **Ana Sayfa (Dashboard)** arayüzünü tasarlama:
-        *   [ ] Duygu metninin girileceği bir `textarea` ve `button`.
-        *   [ ] Önerilerin gösterileceği bir alan.
+    *   [x] Ana layout (Navbar, Footer vb.) bileşenini oluşturma.
+    *   [x] **Kayıt Ol (Register)** sayfası arayüzünü tasarlama (form elemanları).
+    *   [x] **Giriş Yap (Login)** sayfası arayüzünü tasarlama (form elemanları).
+    *   [x] **Ana Sayfa (Dashboard)** arayüzünü tasarlama:
+        *   [x] Duygu metninin girileceği bir `textarea` ve `button`.
+        *   [x] Önerilerin gösterileceği bir alan.
 
 *   **3.2. Öneri Görüntüleme Bileşeni**
-    *   [ ] `SuggestionCard` adında bir bileşen oluşturma.
-    *   [ ] Renk paletini görsel olarak gösterecek bir alan tasarlama.
-    *   [ ] Spotify listesini gömülebilir (embed) bir formatta gösterme.
-    *   [ ] İlham verici sözü gösterme.
+    *   [x] `SuggestionCard` adında bir bileşen oluşturma.
+    *   [x] Renk paletini görsel olarak gösterecek bir alan tasarlama.
+    *   [x] Spotify listesini gömülebilir (embed) bir formatta gösterme.
+    *   [x] İlham verici sözü gösterme.
 
 *   **3.3. Yönlendirme (Routing)**
-    *   [ ] Next.js'te `/`, `/login`, `/register`, `/dashboard` sayfaları için yönlendirmeleri ayarlama.
-    *   [ ] Korumalı sayfalar için (ör. `/dashboard`) yönlendirme mantığı ekleme (giriş yapılmamışsa `/login`'e yönlendir).
+    *   [x] Next.js'te `/`, `/login`, `/register`, `/dashboard` sayfaları için yönlendirmeleri ayarlama.
+    *   [x] Korumalı sayfalar için (ör. `/dashboard`) yönlendirme mantığı ekleme (giriş yapılmamışsa `/login`'e yönlendir).
 
 #### **Faz 4: Entegrasyon ve Ek Özellikler**
 
 Bu faz, ön yüz ve arka yüzü birleştirip ek özellikleri tamamlamayı hedefler.
 
 *   **4.1. API Entegrasyonu**
-    *   [ ] Frontend'de API istekleri için bir servis katmanı oluşturma (`axios` veya `fetch`).
-    *   [ ] Kayıt formunu `POST /api/v1/auth/register` endpoint'ine bağlama.
-    *   [ ] Giriş formunu `POST /api/v1/auth/login` endpoint'ine bağlama.
-    *   [ ] JWT token'ı frontend'de güvenli bir şekilde saklama (localStorage veya httpOnly cookie).
-    *   [ ] Ana sayfadaki duygu giriş formunu `POST /api/v1/analyze` endpoint'ine bağlama.
-    *   [ ] API'den dönen öneri verilerini `SuggestionCard` bileşeninde gösterme.
+    *   [x] Frontend'de API istekleri için bir servis katmanı oluşturma (`axios` veya `fetch`).
+    *   [x] Kayıt formunu `POST /api/v1/auth/register` endpoint'ine bağlama.
+    *   [x] Giriş formunu `POST /api/v1/auth/login` endpoint'ine bağlama.
+    *   [x] JWT token'ı frontend'de güvenli bir şekilde saklama (localStorage veya httpOnly cookie).
+    *   [x] Ana sayfadaki duygu giriş formunu `POST /api/v1/analyze` endpoint'ine bağlama.
+    *   [x] API'den dönen öneri verilerini `SuggestionCard` bileşeninde gösterme.
 
 *   **4.2. Geçmiş Görüntüleme Özelliği**
-    *   [ ] **Backend:** `GET /api/v1/history` endpoint'ini oluşturma (kullanıcının geçmiş tüm girdilerini ve önerilerini döner).
-    *   [ ] **Frontend:** `/history` adında yeni bir sayfa oluşturma.
-    *   [ ] **Frontend:** Bu sayfada `GET /api/v1/history` endpoint'inden gelen verileri listeleyerek gösterme.
+    *   [x] **Backend:** `GET /api/v1/history` endpoint'ini oluşturma (kullanıcının geçmiş tüm girdilerini ve önerilerini döner).
+    *   [x] **Frontend:** `/history` adında yeni bir sayfa oluşturma.
+    *   [x] **Frontend:** Bu sayfada `GET /api/v1/history` endpoint'inden gelen verileri listeleyerek gösterme.
 
 *   **4.3. Kullanıcı Deneyimi İyileştirmeleri**
-    *   [ ] API istekleri sırasında yükleniyor (loading) animasyonları ekleme.
-    *   [ ] Hata durumları için kullanıcıya bilgilendirici mesajlar gösterme (Toast, Alert vb.).
+    *   [x] API istekleri sırasında yükleniyor (loading) animasyonları ekleme.
+    *   [x] Hata durumları için kullanıcıya bilgilendirici mesajlar gösterme (Toast, Alert vb.).
     *   [ ] Mobil cihazlar için responsive tasarımı test etme ve iyileştirme.
 
 #### **Faz 5: Test, Dağıtım (Deployment) ve Son Dokunuşlar**

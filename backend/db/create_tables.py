@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from backend.db.database import Base, engine
+from .database import engine, Base
 from backend.db.models import MoodEntry, Suggestion, User  # noqa
 
 # Logger'ı yapılandır

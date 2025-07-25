@@ -40,9 +40,9 @@ backend/      → Python API ve AI servisi
 
 ```bash
 # Backend
-cd backend
-pip install -r requirements.txt
-python main.py
+# Bu komutları projenin ana dizininden (capstone/) çalıştırın
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --reload
 
 # Frontend
 cd frontend

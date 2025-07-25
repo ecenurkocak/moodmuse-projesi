@@ -1,3 +1,12 @@
+import os
+import google.generativeai as genai
+from .config import settings
+
+# Google API anahtarını ortam değişkeninden al
+# Bu satırı, anahtarınızı güvenli bir şekilde yönetmek için kullanın
+# os.environ["GOOGLE_API_KEY"] = "YOUR_API_KEY"
+genai.configure(api_key=settings.GOOGLE_API_KEY)
+
 import random
 from typing import Dict, List
 

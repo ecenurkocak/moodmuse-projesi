@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Union
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from backend.core.config import settings
+from .config import settings
 
 # Şifre hashleme için context oluştur.
 # "bcrypt" algoritmasını kullanacağımızı belirtiyoruz.

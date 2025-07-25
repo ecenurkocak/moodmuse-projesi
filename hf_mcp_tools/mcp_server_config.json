@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "huggingface-mcp": {
+      "command": "python",
+      "args": ["hf_mcp_server.py"],
+      "env": {
+        "HF_TOKEN": "",
+        "MCP_SERVER_PORT": "3000"
+      }
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "models": {
+    "default": "gpt2",
+    "supported": [
+      "gpt2",
+      "bert-base-uncased",
+      "distilbert-base-uncased",
+      "microsoft/DialoGPT-medium",
+      "facebook/bart-base",
+      "t5-small",
+      "google/flan-t5-small"
+    ]
+  },
+  "api": {
+    "base_url": "https://api-inference.huggingface.co",
+    "timeout": 30,
+    "max_retries": 3
+  }
+} 
