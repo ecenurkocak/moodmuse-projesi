@@ -49,15 +49,17 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
       {spotifyEmbedUrl && (
         <div>
           <h3 className="text-2xl font-bold text-primary mb-4">Your Soundtrack</h3>
-          <iframe
-            src={spotifyEmbedUrl}
-            width="100%"
-            height="352"
-            allowFullScreen={false}
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            className="rounded-lg shadow-lg border border-border-color"
-          ></iframe>
+          <div className="w-full overflow-hidden rounded-xl shadow-lg border border-border-color">
+            <iframe
+              src={spotifyEmbedUrl}
+              width="100%"
+              height="152" // Daha kompakt bir görünüm için yüksekliği düşürdük. İstenirse 352'ye geri çevrilebilir.
+              allowFullScreen={false}
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="w-full" // iframe'in de genişliğinin tam olduğundan emin olalım
+            ></iframe>
+          </div>
         </div>
       )}
 

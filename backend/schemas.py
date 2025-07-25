@@ -28,6 +28,13 @@ class SuggestionCreate(SuggestionBase):
     pass
 
 
+class SuggestionResponse(SuggestionBase):
+    id: int
+    created_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class Suggestion(SuggestionBase):
     id: int
     created_at: datetime.datetime
@@ -48,6 +55,14 @@ class MoodEntryCreate(MoodEntryBase):
     pass
 
 
+class MoodEntryResponse(MoodEntryBase):
+    id: int
+    created_at: datetime.datetime
+    suggestions: List[SuggestionResponse] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class MoodEntry(MoodEntryBase):
     id: int
     created_at: datetime.datetime
@@ -61,7 +76,7 @@ class HistoryResponse(BaseModel):
     total_entries: int
     page: int
     limit: int
-    data: list[MoodEntry]
+    data: list[MoodEntryResponse]
 
 
 class AnalysisRequest(BaseModel):

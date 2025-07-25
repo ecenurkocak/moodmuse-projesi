@@ -12,7 +12,11 @@ DATABASE_URL = settings.DATABASE_URL
 # Veritabanı motorunu oluştur. `echo=True` geliştirme aşamasında
 # çalıştırılan SQL sorgularını konsola basar, bu da hata ayıklama için kullanışlıdır.
 # connect_args={"check_same_thread": False} sadece SQLite için gereklidir.
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(
+    DATABASE_URL, 
+    echo=True, 
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+)
 
 # Asenkron oturumlar oluşturmak için bir fabrika (sessionmaker) tanımla.
 # expire_on_commit=False, oturum kapatıldıktan sonra bile

@@ -16,11 +16,15 @@ class Settings(BaseSettings):
     Uygulama ayarlarını .env dosyasından yükler.
     """
     PROJECT_NAME: str = "MoodMuse"
-    DATABASE_URL: str
+    # Eğer .env dosyasında DATABASE_URL tanımlanmamışsa, varsayılan olarak bir sqlite veritabanı kullan.
+    DATABASE_URL: str = f"sqlite+aiosqlite:///{Path(__file__).parent.parent.parent / 'moodmuse.db'}"
     SECRET_KEY: str
-    ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     GOOGLE_API_KEY: str
+    HUGGING_FACE_API_KEY: str
+    SPOTIFY_CLIENT_ID: str
+    SPOTIFY_CLIENT_SECRET: str
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     model_config = SettingsConfigDict(

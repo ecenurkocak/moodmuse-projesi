@@ -14,7 +14,7 @@ from ..db.models import MoodEntry, Suggestion  # Modelleri doğrudan import et
 from ..schemas import (
     Token, TokenData, User, UserCreate, UserResponse, 
     HistoryResponse, AnalysisRequest, AnalysisResponse,
-    MoodEntryCreate, SuggestionCreate
+    MoodEntryCreate, SuggestionCreate, MoodEntryResponse
 )
 
 # Token'ın hangi URL'den alınacağını belirtir.
@@ -77,7 +77,7 @@ async def login_for_access_token(
             detail="Kullanıcı adı veya şifre hatalı",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(data={"sub": user.username})
+    access_token = create_access_token(data={"sub": user.username, "user_id": user.id})
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -168,15 +168,19 @@ async def get_user_history(
     limit: int = Query(9, ge=1, le=100, description="Sayfa başına girdi sayısı"),
 ):
     skip = (page - 1) * limit
-    history_entries = await crud.get_mood_entries_by_user(
+    db_mood_entries = await crud.get_mood_entries_by_user(
         db, user_id=current_user.id, skip=skip, limit=limit
     )
     total_entries = await crud.count_mood_entries_by_user(db, user_id=current_user.id)
+    
+    # SQLAlchemy nesnelerini Pydantic modellerine manuel olarak dönüştür
+    history_data = [MoodEntryResponse.model_validate(entry) for entry in db_mood_entries]
+
     return HistoryResponse(
         total_entries=total_entries,
         page=page,
         limit=limit,
-        data=history_entries,
+        data=history_data,
     )
 
 @router.delete("/history/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)

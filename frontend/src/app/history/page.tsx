@@ -137,6 +137,7 @@ const HistoryPage = () => {
         {entries.map((entry) => {
           const quote = entry.suggestions.find(s => s.suggestion_type === 'quote')?.content;
           const colors = JSON.parse(entry.suggestions.find(s => s.suggestion_type === 'color')?.content || '[]');
+          const musicLink = entry.suggestions.find(s => s.suggestion_type === 'music')?.content;
           
           return (
             <div key={entry.id} className="bg-card-bg rounded-2xl shadow-lg border border-border-color flex flex-col justify-between p-6 transition-transform hover:scale-105">
@@ -160,6 +161,19 @@ const HistoryPage = () => {
                   <div className="flex items-center space-x-2">
                     <Palette size={18} className="text-text-secondary" />
                     <ColorPalette colors={colors} />
+                  </div>
+                )}
+                {musicLink && (
+                  <div className="flex items-center space-x-2">
+                    <ListMusic size={18} className="text-text-secondary" />
+                    <a
+                      href={musicLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-green-400 hover:underline flex-1 truncate"
+                    >
+                      Spotify'da Dinle
+                    </a>
                   </div>
                 )}
               </div>
