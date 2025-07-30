@@ -16,15 +16,24 @@ class Settings(BaseSettings):
     Uygulama ayarlarını .env dosyasından yükler.
     """
     PROJECT_NAME: str = "MoodMuse"
-    # Eğer .env dosyasında DATABASE_URL tanımlanmamışsa, varsayılan olarak bir sqlite veritabanı kullan.
     DATABASE_URL: str = f"sqlite+aiosqlite:///{Path(__file__).parent.parent.parent / 'moodmuse.db'}"
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    GOOGLE_API_KEY: str
-    HUGGING_FACE_API_KEY: str
-    SPOTIFY_CLIENT_ID: str
-    SPOTIFY_CLIENT_SECRET: str
+    
+    # Harici Servis API Anahtarları (opsiyonel)
+    GOOGLE_API_KEY: str = ""
+    HUGGING_FACE_API_KEY: str = ""
+    SPOTIFY_CLIENT_ID: str = ""
+    SPOTIFY_CLIENT_SECRET: str = ""
+
+    # E-posta Otomasyon Ayarları
+    SENDER_EMAIL: str = ""
+    SENDER_PASSWORD: str = ""
+
+    # Yapay Zeka Servisi (text-generation-webui)
+    AI_SERVICE_URL: str = "http://127.0.0.1:5000"
+
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     model_config = SettingsConfigDict(
@@ -33,4 +42,4 @@ class Settings(BaseSettings):
         extra='ignore'
     )
 
-settings = Settings()  # type: ignore 
+settings = Settings()

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haftalık Duygu Raporun</title>
+          <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #6a5acd; /* SlateBlue */
+            margin: 0;
+            font-size: 28px;
+        }
+        h2, h3, h4 {
+            color: #444;
+        }
+        h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #6a5acd;
+            margin-top: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+        .mood-highlight {
+            background-color: #f0e6ff;
+            border-left: 4px solid #6a5acd;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .quote-box {
+            background-color: #f9f9f9;
+            border-left: 4px solid #ccc;
+            padding: 15px 20px;
+            font-style: italic;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #6a5acd;
+            color: #ffffff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .cta-button:hover {
+            background-color: #5948b1;
+        }
+        .palette {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            align-items: center;
+        }
+        .color-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>MoodMuse</h1>
+        </div>
+
+        <h2>Merhaba {{ username }},</h2>
+        <p>İşte bu haftaki duygu özetin ve sana özel hazırladığımız ilham paketi:</p>
+        
+        <div class="mood-highlight">
+            <strong>Bu hafta en baskın hissettiğin duygu:</strong><br>
+            <span style="font-size: 1.2em; font-weight: 600;">{{ dominant_mood }}</span>
+        </div>
+        
+        <h3>Sana Özel Haftalık İlham Paketi</h3>
+        
+        <h4>Haftanın Sözü</h4>
+        <div class="quote-box">
+            <p><em>"{{ quote }}"</em></p>
+        </div>
+        
+        <h4>Haftanın Çalma Listesi</h4>
+        <p>Ruh haline iyi gelecek şarkılar bir tık uzağında.</p>
+        <a href="{{ spotify_url }}" class="cta-button">Hemen Dinle</a>
+        
+        <h4>Haftanın Renkleri</h4>
+        <p>Bu haftaki hislerini yansıtan renkler:</p>
+        <div class="palette">
+            {% for color in colors %}
+            <div class="color-circle" style="background-color: {{ color }};"></div>
+            {% endfor %}
+        </div>
+        
+        <div class="footer">
+            <p>Bu e-postayı, MoodMuse'a kayıt olduğun için aldın.</p>
+            <p>&copy; 2025 MoodMuse. Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</body>
+</html>

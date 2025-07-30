@@ -4,26 +4,24 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, Response
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
 
 from ..db import crud
 from ..core.config import settings
 from ..core.security import create_access_token, verify_password
 from ..core.ai_service import get_ai_suggestions
 from ..db.database import get_db
-from ..db.models import MoodEntry, Suggestion  # Modelleri doğrudan import et
+from ..db.models import MoodEntry, Suggestion
 from ..schemas import (
     Token, TokenData, User, UserCreate, UserResponse, 
     HistoryResponse, AnalysisRequest, AnalysisResponse,
-    MoodEntryCreate, SuggestionCreate, MoodEntryResponse
+    MoodEntryResponse
 )
 
-# Token'ın hangi URL'den alınacağını belirtir.
-# Bu, Swagger UI'ın "Authorize" butonu için gereklidir.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 router = APIRouter()
 
-# Logger'ı yapılandır
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -31,10 +29,6 @@ logger = logging.getLogger(__name__)
 async def get_current_user(
     token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
 ) -> User:
-    """
-    JWT'yi çözer, kullanıcıyı bulur ve döndürür.
-    Korumalı endpoint'ler için bir dependency olarak kullanılır.
-    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -65,9 +59,6 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
 ):
-    """
-    Kullanıcı girişi yapar ve JWT döndürür.
-    """
     user = await crud.get_user_by_username(db, username=form_data.username)
     if not user or not verify_password(
         form_data.password, str(user.hashed_password)
@@ -85,11 +76,6 @@ async def login_for_access_token(
 async def register_user(
     user: UserCreate, db: AsyncSession = Depends(get_db)
 ) -> User:
-    """
-    Yeni bir kullanıcı kaydı oluşturur.
-    - Kullanıcı adı veya e-posta zaten varsa hata döndürür.
-    - Başarılı olursa yeni kullanıcıyı döndürür.
-    """
     db_user_by_username = await crud.get_user_by_username(db, username=user.username)
     if db_user_by_username:
         raise HTTPException(
@@ -120,42 +106,42 @@ async def analyze_text_and_get_suggestions(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # 1. AI servisinden sonuçları al
     ai_results = await get_ai_suggestions(request.text_input)
 
-    # 2. MoodEntry ve Suggestion nesnelerini bellekte oluştur ve birbirine bağla
+    if "error" in ai_results:
+        raise HTTPException(status_code=500, detail=ai_results["error"])
+
     db_mood_entry = MoodEntry(
         text_input=request.text_input,
-        mood_label=str(ai_results["mood_label"]),
+        mood_label=ai_results.get("mood_label", "bilinmiyor"),
         user_id=current_user.id
     )
     
     suggestions = [
         Suggestion(
             suggestion_type="color",
-            content=json.dumps(ai_results["color_palette"]),
+            content=json.dumps(ai_results.get("color_palette")),
         ),
         Suggestion(
-            suggestion_type="music", content=ai_results["spotify_playlist"]
+            suggestion_type="music", 
+            content=ai_results.get("spotify_playlist"),
         ),
         Suggestion(
-            suggestion_type="quote", content=ai_results["inspirational_quote"]
+            suggestion_type="quote", 
+            content=ai_results.get("inspirational_quote"),
         ),
     ]
     db_mood_entry.suggestions.extend(suggestions)
 
-    # 3. Ana nesneyi session'a ekle (ilişkili nesneler cascade ile eklenecek)
     db.add(db_mood_entry)
-    
-    # 4. Tüm işlemleri tek seferde commit et
     await db.commit()
 
-    # 5. Başarılı yanıtı döndür
     return AnalysisResponse(
-        color_palette=ai_results["color_palette"],
-        spotify_playlist=ai_results["spotify_playlist"],
-        inspirational_quote=ai_results["inspirational_quote"],
+        color_palette=ai_results.get("color_palette"),
+        spotify_playlist=ai_results.get("spotify_playlist"),
+        inspirational_quote=ai_results.get("inspirational_quote"),
     )
+
 
 @router.get(
     "/history",
@@ -173,7 +159,6 @@ async def get_user_history(
     )
     total_entries = await crud.count_mood_entries_by_user(db, user_id=current_user.id)
     
-    # SQLAlchemy nesnelerini Pydantic modellerine manuel olarak dönüştür
     history_data = [MoodEntryResponse.model_validate(entry) for entry in db_mood_entries]
 
     return HistoryResponse(
@@ -201,4 +186,4 @@ async def delete_mood_entry(
         )
     await crud.delete_mood_entry_by_id(db, mood_entry=mood_entry)
     await db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT) 
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
