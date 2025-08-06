@@ -2,31 +2,43 @@
 
 **MoodMuse**, ruh haline göre kullanıcıya renk paletleri, müzik önerileri ve ilham verici içerikler sunan bir yapay zekâ destekli web uygulamasıdır.
 
-## 💡 Özellikler
-- 🧠 AI tabanlı ruh hali analizi (Yerel LLM ve `text-generation-webui` ile)
-- 🎨 Otomatik tema, renk ve estetik önerileri
-- 💌 Haftalık kişiselleştirilmiş e-posta raporları
-- 🔐 Kullanıcı girişi (JWT tabanlı kimlik doğrulama)
-- 💾 SQLite ile veri saklama
-- 🧩 Modüler backend yapısı (FastAPI)
+## 💡 Temel Özellikler
+- **Hibrit Yapay Zeka Mimarisi:**
+    - **Duygu Analizi:** Kullanıcı metinlerinden duygu durumunu tespit etmek için `text-generation-webui` aracılığıyla sunulan yerel bir dil modeli kullanılır. Bu, hızlı ve verimli bir ilk analiz sağlar.
+    - **İçerik Üretimi:** Tespit edilen duyguya özel, yaratıcı ve ilham verici motivasyon sözleri üretmek için **Google Gemini API**'sinden faydalanılır.
+- **Kişiselleştirilmiş Öneriler:**
+    - 🎨 **Dinamik Renk Paletleri:** `Colormind.io` API'si ile duygu durumuna uygun renk paletleri oluşturulur.
+    - 🎵 **Spotify Entegrasyonu:** Kullanıcının ruh haline uygun Spotify çalma listeleri önerilir.
+- **RAG Bilgi Bankası:**
+    - 🧠 Mindfulness ve ruh sağlığı konularında soruları yanıtlayan, `LangChain` ve `ChromaDB` ile oluşturulmuş RAG tabanlı bir bilgi bankası içerir.
+- **Otomasyon & Bildirim:**
+    - 💌 `APScheduler` ile haftalık olarak kullanıcıların duygu analizlerini içeren kişiselleştirilmiş e-posta raporları gönderilir.
+- **Modern ve Güvenli Altyapı:**
+    - 🔐 JWT tabanlı güvenli kullanıcı kimlik doğrulama sistemi.
+    - 💾 `SQLite` ve `ChromaDB` (Vektör) ile veri saklama.
+    - 🧩 FastAPI ile oluşturulmuş modüler ve ölçeklenebilir backend yapısı.
 
-MoodMuse, kullanıcıların mevcut duygularını tanımlayan metinler girmelerine olanak tanır. FastAPI ile güçlendirilmiş arka uç, `text-generation-webui` aracılığıyla sunulan yerel bir dil modelini kullanarak metnin duygusal tonunu analiz eder. Tespit edilen duygu durumuna bağlı olarak, ilham verici sözler, Spotify çalma listeleri ve renk paletleri gibi kişiselleştirilmiş içerikler üretir.
+| Katman | Teknoloji / Servis | Amaç |
+| :--- | :--- | :--- |
+| **Frontend** | Next.js (TypeScript) | Kullanıcı arayüzü |
+| **Backend** | Python (FastAPI) | API sunucusu ve iş mantığı |
+| **Veritabanı**| SQLite, ChromaDB | Kullanıcı verileri ve vektör depolama |
+| **AI - Analiz** | `text-generation-webui` | Hızlı duygu tespiti (yerel model) |
+| **AI - Üretim** | Google Gemini API | Yaratıcı metin ve ilham sözü üretimi |
+| **AI - RAG** | `LangChain` | Bilgi bankası ve soru-cevap mantığı |
+| **Kimlik Doğrulama** | JWT (`python-jose`) | Güvenli kullanıcı oturumları |
+| **Otomasyon** | `APScheduler` | Zamanlanmış görevler (haftalık e-posta) |
 
-| Katman    | Teknoloji   |
-|-----------|-------------|
-| **Frontend** | Next.js (TypeScript) |
-| **Backend**  | Python (FastAPI) |
-| **Veri**     | SQLite |
-| **AI Servisi** | `text-generation-webui` |
-| **Auth**    | JWT (`python-jose`) |
 
-## 🤖 Otomasyon: Haftalık Duygu Raporu
-Proje, kullanıcı etkileşimini artırmak için bir otomasyon ve agent mimarisi içerir.
+## 🧠 Yapay Zeka Mimarisi
 
-- **Zamanlanmış Görevler:** `APScheduler` kütüphanesi kullanılarak, her hafta Pazar günleri tüm aktif kullanıcılara e-posta gönderecek bir görev zamanlanmıştır.
-- **Veri Analizi:** Bu görev, her kullanıcı için o haftanın en baskın duygu durumunu veritabanından analiz eder.
-- **İçerik Üretim Agent'ı:** `LangChain` kütüphanesi kullanılarak oluşturulan bir agent, tespit edilen baskın duyguya göre yerel dil modeline (LLM) bağlanır. Bu agent, kullanıcıya özel ilham verici bir söz ve renk paleti üretir.
-- **Kişiselleştirilmiş E-posta:** Üretilen içerikler, `jinja2` ile hazırlanan şık bir HTML şablonuna yerleştirilir ve CSS stilleri `pynliner` ile satır içi hale getirilerek tüm e-posta istemcilerinde mükemmel görünüm sağlanır.
+MoodMuse, iki farklı yapay zeka yaklaşımını birleştiren hibrit bir model kullanır:
+
+1.  **Yerel Model (`text-generation-webui`):** Hızlı ve anlık yanıt gerektiren **duygu analizi** gibi görevler için kullanılır. Kullanıcının girdiği metnin temel duygusunu (mutlu, üzgün, vb.) anında tespit eder. Bu, maliyeti düşürür ve temel analizler için yüksek bir hız sağlar.
+2.  **Bulut Tabanlı Model (Google Gemini):** Yaratıcılık ve derin anlamsal anlama gerektiren **ilham verici içerik üretimi** için kullanılır. Yerel modelden gelen duygu etiketi ve kullanıcının orijinal metni ile beslenerek daha kaliteli, bağlama uygun ve insan benzeri motivasyon cümleleri oluşturur.
+3.  **RAG (Retrieval-Augmented Generation):** Kullanıcıların belirli konulardaki sorularını yanıtlamak için kullanılır. Bu sistem, `LangChain` ile yönetilir ve `ChromaDB` vektör veritabanında saklanan özel bir bilgi havuzundan (PDF dokümanları) ilgili bilgileri çeker. Çekilen bu bilgiler, LLM'e bağlam olarak sunularak daha doğru ve güvenilir cevaplar üretilmesi sağlanır.
+
+Bu hibrit yapı, projenin hem hızlı ve verimli çalışmasını hem de yüksek kaliteli ve yaratıcı çıktılar sunmasını sağlar.
 
 ## 🚀 Kurulum ve Çalıştırma
 
@@ -40,33 +52,28 @@ git clone https://github.com/ecenurkocak/MoodMuse.git
 cd MoodMuse
 ```
 
-### **2. Ortam Değişkenleri (.env)**
+### **2. Ortam Değişkenleri (`.env`)**
 
-Projenin arka ucunun (backend) düzgün çalışabilmesi için ortam değişkenlerini ayarlamanız gerekmektedir.
-
-1.  `backend` klasörünün içine girin ve `.env.example` adında bir dosya varsa, onu `.env` olarak kopyalayın. Yoksa, `backend` klasörünün içinde elle `.env` adında yeni bir dosya oluşturun.
-2.  Oluşturduğunuz `.env` dosyasını aşağıdaki şablonla doldurun:
+Projenin arka ucunun (backend) düzgün çalışabilmesi için ortam değişkenlerini ayarlamanız gerekmektedir. `backend` klasörünün içinde `.env` adında yeni bir dosya oluşturun ve aşağıdaki şablonla doldurun:
 
 ```
 # Veritabanı Ayarları
-# Geliştirme için SQLite kullanılıyorsa bu satırı değiştirmeyin.
 DATABASE_URL="sqlite+aiosqlite:///../moodmuse.db"
 
 # JWT Kimlik Doğrulama
-# Güvenli ve tahmin edilemez bir anahtar belirleyin.
 SECRET_KEY="jwt_icin_kullanacaginiz_super_gizli_anahtar"
 
 # E-posta Otomasyon Ayarları
-# Haftalık raporları gönderecek olan Gmail hesabının bilgileri.
 SENDER_EMAIL="ornek-mail@gmail.com"
-# Google'dan alınmış 16 haneli Uygulama Şifresi (App Password).
-SENDER_PASSWORD="16haneliuygulamasifreniz"
+SENDER_PASSWORD="16haneliuygulamasifreniz" # Google App Password
 
-# Yapay Zeka Servisi (text-generation-webui)
-# Oobabooga sunucunuzun çalıştığı adres.
-AI_SERVICE_URL="http://127.0.0.1:5000"
+# Yapay Zeka Servisleri
+AI_SERVICE_URL="http://127.0.0.1:5000" # text-generation-webui adresi
+GEMINI_API_KEY="google_gemini_api_anahtariniz" # Google AI Studio'dan alınan anahtar
 ```
-**Önemli Not:** `SENDER_PASSWORD` olarak normal Gmail şifrenizi değil, Google Hesap ayarlarınızdan oluşturacağınız **Uygulama Şifresini** kullanmalısınız.
+**Önemli Notlar:**
+- `SENDER_PASSWORD` olarak normal Gmail şifrenizi değil, Google Hesap ayarlarınızdan oluşturacağınız **Uygulama Şifresini** kullanmalısınız.
+- `GEMINI_API_KEY` değerini Google AI Studio üzerinden almanız gerekmektedir.
 
 ### **3. Arka Ucu (Backend) Çalıştırma**
 
@@ -88,7 +95,15 @@ AI_SERVICE_URL="http://127.0.0.1:5000"
     python -m backend.db.create_tables
     ```
 
-4.  **FastAPI Sunucusunu Başlatma:**
+4.  **Bilgi Bankasını Hazırlama (Veri Yükleme):**
+    RAG sisteminin çalışması için kaynak dokümanları işlemeniz gerekir.
+    ```bash
+    # Projenin ana dizinindeyken
+    python -m rag.ingest
+    ```
+    Bu komut, `rag/source_documents` klasöründeki PDF'leri işleyecek ve `db/chroma` klasöründe veritabanını oluşturacaktır.
+
+5.  **FastAPI Sunucusunu Başlatma:**
     ```bash
     uvicorn backend.main:app --reload
     ```

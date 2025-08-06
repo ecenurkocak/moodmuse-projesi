@@ -53,11 +53,11 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
             <iframe
               src={spotifyEmbedUrl}
               width="100%"
-              height="152" // Daha kompakt bir görünüm için yüksekliği düşürdük. İstenirse 352'ye geri çevrilebilir.
+              height="352" // Standard Spotify embed yüksekliği, şarkı listesini göstermek için.
               allowFullScreen={false}
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"
-              className="w-full" // iframe'in de genişliğinin tam olduğundan emin olalım
+              className="w-full"
             ></iframe>
           </div>
         </div>
@@ -76,4 +76,4 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
   );
 };
 
-export default SuggestionCard; 
+export default SuggestionCard;

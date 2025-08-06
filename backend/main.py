@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .db.database import Base, engine
-from .api import auth
+from .api import auth, rag  # rag modülünü import et
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,7 +38,8 @@ app.add_middleware(
 
 # API Rotalarını Dahil Et
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(rag.router, prefix="/api/v1/rag", tags=["RAG"]) # RAG router'ını ekle
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to MoodMuse API"} 
+    return {"message": "Welcome to MoodMuse API"}

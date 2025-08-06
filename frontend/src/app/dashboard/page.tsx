@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/services/api';
 import SuggestionCard from '@/components/suggestion-card';
+import RagQueryCard from '@/components/RagQueryCard'; // Yeni bileşeni import et
 
 // Backend'den gelen yanıta göre tipleri güncelleyelim
 // Bu tipler backend/schemas.py ile uyumlu olmalı
@@ -126,8 +127,12 @@ const DashboardPage = () => {
           <SuggestionCard suggestion={analysisResult} />
         </div>
       )}
+
+      {/* RAG Sorgu Kartını Buraya Ekle */}
+      <RagQueryCard />
+      
     </div>
   );
 };
 
-export default DashboardPage; 
+export default DashboardPage;

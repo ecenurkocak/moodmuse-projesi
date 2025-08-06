@@ -5,6 +5,7 @@ import re
 import json
 import random
 from .spotify_service import get_spotify_access_token, search_spotify_playlist
+from ..core.gemini_service import generate_inspiration_with_gemini # Gemini servisimizi import ediyoruz
 
 llm = ChatOpenAI(
     temperature=0.7,
@@ -14,7 +15,6 @@ llm = ChatOpenAI(
 )
 
 # Duyguları, Colormind API'sinin modelleriyle eşleştiriyoruz.
-# Colormind her gün yeni modeller ekleyebilir, bu eşleştirme genişletilebilir.
 MOOD_TO_COLORMIND_MODEL = {
     "mutlu": "default",
     "üzgün": "ui",
@@ -36,14 +36,12 @@ async def generate_palette_from_colormind(mood_label: str) -> list[str]:
         async with httpx.AsyncClient(timeout=15.0) as client:
             response = await client.post("http://colormind.io/api/", json=payload)
             response.raise_for_status()
-            # RGB'den HEX'e dönüştürme
             rgb_palette = response.json().get("result", [])
             hex_palette = [f"#{r:02x}{g:02x}{b:02x}" for r, g, b in rgb_palette]
-            # Colormind 5 renk döner, biz ilk 3 veya 4 tanesini kullanabiliriz.
             return hex_palette[:4]
     except Exception as e:
         print(f"Colormind API hatası: {e}")
-        return ["#D3D3D3", "#A9A9A9", "#808080", "#696969"]  # Fallback
+        return ["#D3D3D3", "#A9A9A9", "#808080", "#696969"]
 
 async def get_ai_suggestions(text: str) -> dict:
     """
@@ -51,7 +49,7 @@ async def get_ai_suggestions(text: str) -> dict:
     ve diğer önerileri dinamik olarak oluşturur.
     """
     try:
-        # Adım 1: Duygu Analizi
+        # Adım 1: Duygu Analizi (Yerel model ile)
         mood_prompt = (
             f"Verilen metnin ana duygusunu şu listeden birini seçerek belirle: "
             f"mutlu, üzgün, kızgın, şaşkın, sakin, enerjik, düşünceli, kararsız. "
@@ -68,14 +66,11 @@ async def get_ai_suggestions(text: str) -> dict:
         # Adım 2: Colormind API'sinden Renk Paleti Alımı
         color_list = await generate_palette_from_colormind(mood_label)
 
-        # Adım 3: İlham Sözü Üretimi
-        quote_prompt = f"""'{mood_label}' duygusuna uygun, kısa, dramatik olmayan, içten ve sade bir Türkçe motivasyon cümlesi üret.
-Sadece şu formatta yaz: Söz: "..." """
-        quote_response = await llm.ainvoke(quote_prompt)
-        content = quote_response.content.strip()
-        
-        quote_match = re.search(r"Söz:\s*[\"'](.+?)[\"']", content)
-        inspirational_quote = quote_match.group(1).strip() if quote_match else "Bazen duygular karmaşıktır."
+        # Adım 3: İlham Sözü Üretimi (Google Gemini ile)
+        # Gemini'ye hem kullanıcının orijinal metnini hem de çıkardığımız duygu etiketini göndererek
+        # daha zengin bir bağlam sunabiliriz.
+        gemini_prompt = f"Kullanıcı '{mood_label}' hissettiğini ve gününün şöyle geçtiğini belirtti: '{text}'. Ona özel, kısa, dramatik olmayan, içten ve sade bir Türkçe motivasyon cümlesi üret."
+        inspirational_quote = generate_inspiration_with_gemini(gemini_prompt)
 
         # Adım 4: Spotify Playlist Bulma
         spotify_token = await get_spotify_access_token()

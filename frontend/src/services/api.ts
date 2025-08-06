@@ -61,4 +61,16 @@ export const deleteHistoryEntry = async (entryId: number): Promise<void> => {
   }
 };
 
-export default authApiClient; 
+// RAG sorgusu için yeni fonksiyon
+export const queryRag = async (question: string): Promise<{ answer: string }> => {
+  try {
+    const response = await authApiClient.post('/api/v1/rag/query', { question });
+    return response.data;
+  } catch (error) {
+    console.error('Error querying RAG:', error);
+    throw error;
+  }
+};
+
+
+export default authApiClient;
