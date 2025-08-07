@@ -138,3 +138,5 @@ GEMINI_API_KEY="google_gemini_api_anahtariniz" # Google AI Studio'dan alınan an
 Pull request ve issue açarak projeye destek olabilirsin.
 Geri bildirimler benim için çok değerli! 💌
 **Created with 💖 by [@ecenurkocak](https://github.com/ecenurkocak)**
+
+:/
