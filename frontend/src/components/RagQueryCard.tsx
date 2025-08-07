@@ -31,7 +31,7 @@ const RagQueryCard = () => {
   };
 
   return (
-    <div className="mt-12 bg-card-bg p-8 rounded-xl shadow-lg border border-border-color">
+    <div className="mt-12 bg-white/10 backdrop-blur-md p-8 rounded-xl shadow-lg border border-white/20">
       <h2 className="text-3xl font-bold text-center mb-6 text-text-main">
         Ask the Mindfulness Expert
       </h2>
@@ -44,7 +44,7 @@ const RagQueryCard = () => {
             id="ragQuestion"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="w-full h-28 p-4 text-text-main bg-bg-main border border-border-color rounded-md shadow-sm focus:ring-primary focus:border-primary transition"
+            className="w-full h-28 p-4 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-500 transition"
             placeholder="e.g., How can I practice mindfulness during a busy day?"
             required
           />
@@ -65,9 +65,9 @@ const RagQueryCard = () => {
       )}
 
       {answer && (
-        <div className="mt-8 p-6 bg-bg-main border border-border-color rounded-lg animate-fade-in">
-          <h3 className="text-xl font-semibold mb-3 text-text-main">Answer:</h3>
-          <p className="text-text-secondary whitespace-pre-wrap">{answer}</p>
+        <div className="mt-8 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg animate-fade-in">
+          <h3 className="text-xl font-semibold mb-3 text-black">Answer:</h3>
+          <p className="text-black whitespace-pre-wrap">{answer}</p>
         </div>
       )}
     </div>

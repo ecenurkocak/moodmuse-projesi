@@ -25,7 +25,7 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
   const spotifyEmbedUrl = getSpotifyEmbedUrl(spotify_playlist);
 
   return (
-    <div className="bg-card-bg p-8 rounded-xl shadow-lg border border-border-color space-y-8">
+    <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl shadow-lg border border-white/20 space-y-8">
       
       {/* Renk Paleti */}
       <div>

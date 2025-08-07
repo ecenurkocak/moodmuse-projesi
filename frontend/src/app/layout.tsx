@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`flex flex-col min-h-screen bg-bg-main text-text-main`}>
+      <body className={`flex flex-col min-h-screen`}>
         <AuthProvider>
           <Navbar />
           <main className="flex-grow container mx-auto px-4 py-8">

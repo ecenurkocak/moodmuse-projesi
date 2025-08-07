@@ -51,7 +51,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center py-12">
-      <div className="w-full max-w-md p-8 space-y-8 bg-card-bg rounded-xl shadow-lg border border-border-color">
+      <div className="w-full max-w-md p-8 space-y-8 bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20">
         <h2 className="text-3xl font-bold text-center text-text-main">
           Login to MoodMuse
         </h2>
@@ -76,7 +76,7 @@ const LoginPage = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-text-main bg-card-bg border border-border-color rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 mt-1 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-300"
             />
           </div>
           <div>
@@ -94,7 +94,7 @@ const LoginPage = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-text-main bg-card-bg border border-border-color rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              className="w-full px-3 py-2 mt-1 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-300"
             />
           </div>
           <div>

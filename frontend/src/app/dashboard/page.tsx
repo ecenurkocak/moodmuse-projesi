@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/services/api';
 import SuggestionCard from '@/components/suggestion-card';
-import RagQueryCard from '@/components/RagQueryCard'; // Yeni bileşeni import et
+import RagQueryCard from '@/components/RagQueryCard';
+import { Button } from '@/components/ui/button';
 
 // Backend'den gelen yanıta göre tipleri güncelleyelim
 // Bu tipler backend/schemas.py ile uyumlu olmalı
@@ -88,11 +89,10 @@ const DashboardPage = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-8 text-text-main">
-        How are you feeling today?
-      </h1>
-      
-      <form onSubmit={handleAnalysis} className="bg-card-bg p-8 rounded-xl shadow-lg border border-border-color">
+      <form onSubmit={handleAnalysis} className="bg-white/10 backdrop-blur-md p-8 rounded-xl shadow-lg border border-white/20">
+        <h1 className="text-4xl font-bold text-center mb-6 text-text-main">
+          How are you feeling today?
+        </h1>
         <div className="mb-4">
           <label htmlFor="textInput" className="block text-lg font-medium text-text-secondary mb-2">
             Describe your feelings, thoughts, or your day.
@@ -101,18 +101,18 @@ const DashboardPage = () => {
             id="textInput"
             value={textInput}
             onChange={(e) => setTextInput(e.target.value)}
-            className="w-full h-40 p-4 text-text-main bg-bg-main border border-border-color rounded-md shadow-sm focus:ring-primary focus:border-primary transition"
+            className="w-full h-40 p-4 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-500 transition"
             placeholder="e.g., I had a really productive day and I feel energized..."
             required
           />
         </div>
-        <button
+        <Button
           type="submit"
           disabled={isLoading || !textInput}
-          className="w-full px-6 py-3 text-lg font-semibold text-white bg-primary rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-slate-400 transition"
+          className="w-full px-6 py-3 text-lg font-semibold"
         >
           {isLoading ? 'Analyzing...' : 'Analyze My Mood'}
-        </button>
+        </Button>
       </form>
 
       {error && (

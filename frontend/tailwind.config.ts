@@ -13,8 +13,8 @@ const config: Config = {
         'card-bg': '#FFFFFF',         // Saf Beyaz
         'text-main': '#374151',       // Koyu Kurşun (Okunabilirlik için)
         'text-secondary': '#6B7280',  // Gri
-        'primary': '#957DAD',         // Lavanta Moru
-        'primary-hover': '#806B9A',   // Lavanta Moru (Koyu Ton)
+        'primary': '#52277b',         // Yeni Ana Renk (Koyu Mor)
+        'primary-hover': '#422063',   // Yeni Ana Rengin Koyu Tonu
         'border-color': '#E0BBE4',    // Thistle
         'accent-violet': '#D291BC',   // Pastel Menekşe
         'accent-pink': '#FEC8D8',     // Pamuk Şekeri
@@ -23,4 +23,4 @@ const config: Config = {
   },
   plugins: [],
 }
-export default config 
+export default config

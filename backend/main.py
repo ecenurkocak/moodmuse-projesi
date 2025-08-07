@@ -26,6 +26,7 @@ origins = [
     "http://127.0.0.1:3000", # Alternatif localhost adresi
     "http://localhost:3001",  # Next.js'in fallback portu
     "http://127.0.0.1:3001",
+    "http://192.168.1.186:3000", # Yerel ağdaki erişim için eklendi
 ]
 
 app.add_middleware(

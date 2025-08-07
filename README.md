@@ -103,7 +103,16 @@ GEMINI_API_KEY="google_gemini_api_anahtariniz" # Google AI Studio'dan alınan an
     ```
     Bu komut, `rag/source_documents` klasöründeki PDF'leri işleyecek ve `db/chroma` klasöründe veritabanını oluşturacaktır.
 
-5.  **FastAPI Sunucusunu Başlatma:**
+5.  **Yerel Yapay Zeka Sunucusunu (text-generation-webui) Çalıştırma:**
+    Duygu analizi özelliğinin çalışması için yerel dil modelini sunan sunucuyu başlatmanız gerekir. Bu komut, `mistral-7b-instruct-v0.2.Q4_K_M.gguf` modelini otomatik olarak yükleyecektir.
+    ```bash
+    # Yeni bir terminal açın ve projenin ana dizinindeyken çalıştırın
+    cmd /c "cd text-generation-webui && start_windows.bat --model mistral-7b-instruct-v0.2.Q4_K_M.gguf --api --api-port 5000"
+    ```
+    *Not: Bu sunucunun tamamen başlaması ve modeli yüklemesi birkaç dakika sürebilir.*
+
+6.  **FastAPI Sunucusunu Başlatma:**
+    Tüm servisler hazır olduğunda, ana backend sunucusunu başlatın.
     ```bash
     uvicorn backend.main:app --reload
     ```

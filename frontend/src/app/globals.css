@@ -4,4 +4,10 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  background-image: url('/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: white; /* Varsayılan metin rengini beyaz yapalım, okunurluk için */
 }
