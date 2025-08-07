@@ -77,3 +77,5 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
 };
 
 export default SuggestionCard;
+
+
