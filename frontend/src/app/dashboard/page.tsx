@@ -128,7 +128,6 @@ const DashboardPage = () => {
         </div>
       )}
 
-      {/* RAG Sorgu Kartını Buraya Ekle */}
       <RagQueryCard />
       
     </div>

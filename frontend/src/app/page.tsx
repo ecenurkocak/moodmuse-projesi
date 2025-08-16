@@ -88,70 +88,60 @@ export default function Home() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl py-12 px-4">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-primary">
-          Merhaba, {user.username}!
-        </h1>
-        <p className="text-lg text-text-secondary mt-2">
-          Bugün nasıl hissediyorsun? Ruh halini bizimle paylaş, sana özel ilham verelim.
-        </p>
-      </div>
-
-      <div className="bg-background-secondary p-8 rounded-xl shadow-lg">
-        <Textarea
-          placeholder="Bugün nasıl hissediyorsun? Birkaç kelimeyle anlat..."
-          value={textInput}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setTextInput(e.target.value);
-            if (error) setError(null);
-          }}
-          className="w-full p-4 rounded-md text-base border-2 border-border-color focus:border-primary transition"
-          rows={6}
-        />
-        <div className="flex justify-between items-center mt-4">
-          <p className="text-sm text-text-tertiary">
-            {textInput.length} / 300
-          </p>
-          <Button
-            onClick={handleAnalysis}
-            disabled={
-              isLoading || textInput.length < 20 || textInput.length > 300
-            }
-            className="px-8 py-3 text-lg font-semibold rounded-md text-white bg-primary hover:bg-primary-hover disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Analiz Ediliyor...
-              </>
-            ) : (
-              'İlham Bul'
-            )}
-          </Button>
+    <div className="flex flex-col items-center justify-center text-center">
+      
+      {/* Hero Section */}
+      <section className="w-full py-20 md:py-32 lg:py-40">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+              Discover Your Inner World with MoodMuse
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8">
+              Your personal AI companion for understanding emotions and finding inspiration.
+            </p>
+            <Link 
+              href="/register" 
+              className="inline-block px-8 py-3 text-lg font-semibold rounded-md text-primary-foreground bg-primary hover:bg-primary/90 transition"
+            >
+              Get Started for Free
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {error && (
-        <div className="mt-6 p-4 bg-red-100 text-red-700 rounded-md text-center">
-          {error}
-        </div>
-      )}
-
-      {suggestions && (
-        <div className="mt-12">
-          <h2 className="text-3xl font-bold text-center text-primary mb-8">
-            İşte Senin İçin Hazırladıklarımız!
+      {/* Features Section */}
+      <section className="w-full py-20 md:py-24 bg-background/70 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
+            Why You'll Love MoodMuse
           </h2>
-          <SuggestionCard
-            suggestion={{
-              color_palette: suggestions.color_palette,
-              spotify_playlist: suggestions.spotify_url,
-              inspirational_quote: suggestions.quote,
-            }}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="bg-card/70 backdrop-blur-md p-6 rounded-lg border">
+              <h3 className="text-xl font-semibold text-foreground mb-2">AI-Powered Analysis</h3>
+              <p className="text-muted-foreground">
+                Understand the emotions behind your words with our advanced AI.
+              </p>
+            </div>
+            {/* Feature 2 */}
+            <div className="bg-card/70 backdrop-blur-md p-6 rounded-lg border">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Personalized Suggestions</h3>
+              <p className="text-muted-foreground">
+                Get curated color palettes, music, and quotes to match your mood.
+              </p>
+            </div>
+            {/* Feature 3 */}
+            <div className="bg-card/70 backdrop-blur-md p-6 rounded-lg border">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Track Your Journey</h3>
+              <p className="text-muted-foreground">
+                Look back at your emotional history and see how you've grown.
+              </p>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
+
     </div>
   );
 }

@@ -5,7 +5,8 @@ from sqlalchemy.orm import declarative_base
 
 # ..core.config'den gelen settings'i import ediyoruz.
 # Bu, config.py dosyasının bir üst dizindeki 'core' klasöründe olduğunu varsayar.
-from ..core.config import settings
+from backend.core.config import settings
+
 
 DATABASE_URL = settings.DATABASE_URL
 

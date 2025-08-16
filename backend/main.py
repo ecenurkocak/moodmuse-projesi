@@ -1,8 +1,13 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .db.database import Base, engine
-from .api import auth, rag  # rag modülünü import et
+from fastapi.staticfiles import StaticFiles
+from backend.db.database import Base, engine
+from backend.api import auth, rag  # rag modülünü import et
+
+# Static dosyalar için dizin oluştur
+os.makedirs("static/profile_images", exist_ok=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,6 +41,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Static Dosyaları Sunma
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # API Rotalarını Dahil Et
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])

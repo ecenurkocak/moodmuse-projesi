@@ -9,12 +9,12 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select
+from sqlalchemy.future import select
 
-from ..db.database import AsyncSessionFactory
-from ..db.models import User, MoodEntry
-from .content_agent import generate_content_for_mood
-
-from ..core.config import settings
+from db.database import AsyncSessionFactory
+from db.models import User, MoodEntry
+from sqlalchemy.orm import selectinload
+from core.config import settings
 
 # E-posta gönderimi için SMTP ayarları config'den okunur
 SMTP_SERVER = "smtp.gmail.com"  # Genellikle sabit kalır

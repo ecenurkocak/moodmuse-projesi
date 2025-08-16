@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-// import { Inter } from "next/font/google"; // GEÇİCİ OLARAK DEVRE DIŞI BIRAKILDI
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { AuthProvider } from "@/context/AuthContext";
 
-// const inter = Inter({ subsets: ["latin"] }); // GEÇİCİ OLARAK DEVRE DIŞI BIRAKILDI
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "MoodMuse",
@@ -19,14 +20,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`flex flex-col min-h-screen`}>
-        <AuthProvider>
-          <Navbar />
-          <main className="flex-grow container mx-auto px-4 py-8">
-            {children}
-          </main>
-          <Footer />
-        </AuthProvider>
+      <body className={`${inter.className} bg-bg-main`}>
+          <AuthProvider>
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-grow container mx-auto px-4 py-8">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
       </body>
     </html>
   );

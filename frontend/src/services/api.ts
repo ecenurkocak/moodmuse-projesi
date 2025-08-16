@@ -72,5 +72,45 @@ export const queryRag = async (question: string): Promise<{ answer: string }> =>
   }
 };
 
+// Mevcut kullanıcı bilgilerini getirme
+export const getCurrentUser = async (): Promise<any> => {
+  try {
+    const response = await authApiClient.get('/api/v1/auth/users/me');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching current user:', error);
+    throw error;
+  }
+};
+
+// Kullanıcı profili güncelleme
+export const updateUserProfile = async (profileData: { username?: string; bio?: string }): Promise<any> => {
+  try {
+    const response = await authApiClient.put('/api/v1/auth/profile', profileData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+};
+
+// Profil fotoğrafı yükleme
+export const uploadProfileImage = async (file: File): Promise<any> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const response = await authApiClient.post('/api/v1/auth/users/me/upload-profile-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    throw error;
+  }
+};
+
 
 export default authApiClient;

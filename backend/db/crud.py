@@ -4,9 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
-from .models import User, MoodEntry, Suggestion
-from ..schemas import UserCreate, MoodEntryCreate, SuggestionCreate
-from ..core.security import get_password_hash
+from backend.db.models import User, MoodEntry, Suggestion
+from backend.schemas import UserCreate, MoodEntryCreate, SuggestionCreate, UserUpdate
+from backend.core.security import get_password_hash
 
 # Logger'ı yapılandır
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +25,12 @@ async def get_user_by_username(db: AsyncSession, username: str) -> User | None:
     return result.scalars().first()
 
 
+async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
+    """Verilen ID'ye sahip kullanıcıyı veritabanından bulur."""
+    result = await db.execute(select(User).filter(User.id == user_id))
+    return result.scalars().first()
+
+
 async def create_user(db: AsyncSession, user: UserCreate) -> User:
     """Yeni bir kullanıcı oluşturur ve veritabanına ekler."""
     hashed_password = get_password_hash(user.password)
@@ -34,6 +40,40 @@ async def create_user(db: AsyncSession, user: UserCreate) -> User:
         hashed_password=hashed_password
     )
     db.add(db_user)
+    return db_user
+
+
+async def update_user(db: AsyncSession, user_id: int, user_update: "UserUpdate") -> User | None:
+    """Kullanıcının profil bilgilerini (kullanıcı adı, bio) günceller."""
+    
+    result = await db.execute(select(User).filter(User.id == user_id))
+    db_user = result.scalars().first()
+    
+    if not db_user:
+        return None
+        
+    update_data = user_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        if hasattr(db_user, key):
+            setattr(db_user, key, value)
+            
+    # Commit ve refresh işlemleri artık bu fonksiyonu çağıran endpoint'te yapılacak.
+    return db_user
+
+
+async def update_user_profile_image_url(db: AsyncSession, user_id: int, image_url: str) -> User | None:
+    """Kullanıcının profil fotoğrafı URL'sini günceller."""
+    
+    result = await db.execute(select(User).filter(User.id == user_id))
+    db_user = result.scalars().first()
+    
+    if not db_user:
+        return None
+        
+    db_user.profile_image_url = image_url
+            
+    # Commit ve refresh işlemleri artık bu fonksiyonu çağıran endpoint'te yapılacak.
     return db_user
 
 
