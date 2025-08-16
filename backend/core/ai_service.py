@@ -1,11 +1,11 @@
-from ..core.config import settings
+from .config import settings
 import httpx
 from langchain_openai import ChatOpenAI
 import re
 import json
 import random
 from .spotify_service import get_spotify_access_token, search_spotify_playlist
-from ..core.gemini_service import generate_inspiration_with_gemini # Gemini servisimizi import ediyoruz
+from .gemini_service import generate_inspiration_with_gemini # Gemini servisimizi import ediyoruz
 
 llm = ChatOpenAI(
     temperature=0.7,

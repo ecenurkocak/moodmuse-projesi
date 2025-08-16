@@ -12,6 +12,7 @@ import { Trash2, Palette, Quote, ListMusic, ChevronLeft, ChevronRight, Loader2, 
 const ColorPalette = ({ colors }: { colors: string[] }) => (
   <div className="flex space-x-1">
     {colors.map((color, index) => (
+      // eslint-disable-next-line
       <div key={index} className="w-6 h-6 rounded-full border border-gray-300" style={{ backgroundColor: color }} />
     ))}
   </div>
@@ -136,15 +137,16 @@ const HistoryPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {entries.map((entry) => {
           const quote = entry.suggestions.find(s => s.suggestion_type === 'quote')?.content;
-          const colors = JSON.parse(entry.suggestions.find(s => s.suggestion_type === 'color')?.content || '[]');
+          const colorContent = entry.suggestions.find(s => s.suggestion_type === 'color')?.content;
+          const colors = colorContent ? colorContent.split(',').map(color => color.trim()) : [];
           const musicLink = entry.suggestions.find(s => s.suggestion_type === 'music')?.content;
           
           return (
-            <div key={entry.id} className="bg-card-bg rounded-2xl shadow-lg border border-border-color flex flex-col justify-between p-6 transition-transform hover:scale-105">
+            <div key={entry.id} className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 flex flex-col justify-between p-6 transition-transform hover:scale-105">
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <p className="text-sm text-text-secondary">{formatDate(entry.created_at)}</p>
-                  <button onClick={() => handleDeleteClick(entry.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                  <button onClick={() => handleDeleteClick(entry.id)} className="text-gray-400 hover:text-red-500 transition-colors" title="Anıyı Sil">
                     <Trash2 size={20} />
                   </button>
                 </div>
@@ -196,6 +198,7 @@ const HistoryPage = () => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1 || isLoading}
             className="p-2 rounded-full bg-card-bg border border-border-color disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
+            title="Önceki Sayfa"
           >
             <ChevronLeft size={24} />
           </button>
@@ -206,6 +209,7 @@ const HistoryPage = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages || isLoading}
             className="p-2 rounded-full bg-card-bg border border-border-color disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
+            title="Sonraki Sayfa"
           >
             <ChevronRight size={24} />
           </button>
@@ -214,7 +218,7 @@ const HistoryPage = () => {
 
       {entryToDelete !== null && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-card-bg p-8 rounded-lg shadow-2xl max-w-sm w-full">
+          <div className="bg-white/10 backdrop-blur-md p-8 rounded-lg shadow-2xl max-w-sm w-full border border-white/20">
             <h2 className="text-xl font-bold text-text-main mb-4">Anıyı Sil</h2>
             <p className="text-text-secondary mb-6">Bu anıyı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
             <div className="flex justify-end space-x-4">

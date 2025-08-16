@@ -41,6 +41,13 @@ const Navbar = () => {
 >
   History
 </Link>
+
+<Link
+    href="/profile"
+    className="rounded-lg bg-purple-500/20 px-5 py-2.5 text-lg font-semibold text-white transition-colors duration-200 hover:bg-purple-600"
+>
+    Profile
+</Link>
               <button
                 onClick={logout}
                 className="rounded-lg bg-red-600 px-5 py-2.5 text-lg font-semibold text-white shadow-sm transition-opacity hover:bg-red-700"
@@ -60,7 +67,7 @@ const Navbar = () => {
 
               <Link
                 href="/register"
-                className="rounded-lg bg-accent-pink px-5 py-2.5 text-lg font-semibold text-text-main shadow-sm transition-opacity hover:opacity-90"
+                className="rounded-lg bg-primary px-5 py-2.5 text-lg font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
               >
                 Register
               </Link>

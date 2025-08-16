@@ -2,16 +2,19 @@ import os
 import asyncio
 import re
 from langchain_openai import ChatOpenAI
-from ..core.config import settings
-from ..core.ai_service import generate_palette_from_colormind
-from ..core.spotify_service import get_spotify_access_token, search_spotify_playlist
+from typing import Dict, Any
 
-async def generate_content_for_mood(dominant_mood: str) -> dict:
+from core.config import settings
+from core.ai_service import generate_palette_from_colormind
+from core.spotify_service import get_spotify_access_token, search_spotify_playlist
+
+
+async def generate_content_for_mood(mood: str, user_text: str) -> Dict[str, Any]:
     """
     Belirtilen duygu durumuna göre kişiselleştirilmiş içerik üretir.
     Ana uygulamadaki (ai_service) modern ve kaliteli mantığı kullanır.
     """
-    if not dominant_mood:
+    if not mood:
         raise ValueError("Duygu durumu boş olamaz.")
 
     try:
@@ -22,15 +25,15 @@ async def generate_content_for_mood(dominant_mood: str) -> dict:
             model_name="local-model"
         )
         
-        print(f"'{dominant_mood}' için e-posta içeriği üretiliyor...")
+        print(f"'{mood}' için e-posta içeriği üretiliyor...")
 
         # 1. Profesyonel Renk Paleti (Colormind API)
-        color_palette_list = await generate_palette_from_colormind(dominant_mood)
+        color_palette_list = await generate_palette_from_colormind(mood)
         color_palette_str = ", ".join(color_palette_list)
         print("Renk paleti üretildi.")
 
         # 2. Kaliteli Alıntı (Yönlendirilmiş Prompt)
-        quote_prompt = f"""'{dominant_mood}' duygusuna uygun, kısa, dramatik olmayan, içten ve sade bir Türkçe motivasyon cümlesi üret.
+        quote_prompt = f"""'{mood}' duygusuna uygun, kısa, dramatik olmayan, içten ve sade bir Türkçe motivasyon cümlesi üret.
 Sadece şu formatta yaz: Söz: "..." """
         quote_response = await llm.ainvoke(quote_prompt)
         content = quote_response.content.strip()
@@ -42,7 +45,7 @@ Sadece şu formatta yaz: Söz: "..." """
         spotify_token = await get_spotify_access_token()
         spotify_url = "https://open.spotify.com/"
         if spotify_token:
-            search_term = f"{dominant_mood} ruh hali müzik"
+            search_term = f"{mood} ruh hali müzik"
             playlist_url = await search_spotify_playlist(search_term, spotify_token)
             if playlist_url:
                 spotify_url = playlist_url

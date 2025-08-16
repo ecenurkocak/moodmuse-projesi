@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, status, Body
 from pydantic import BaseModel, Field
-from ..rag_chain import query_rag_chain # Gerçek RAG zincirimizi import edelim
+from backend.rag_chain import query_rag_chain # Gerçek RAG zincirimizi import edelim
 
 router = APIRouter()
 

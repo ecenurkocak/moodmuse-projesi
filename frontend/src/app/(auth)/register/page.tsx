@@ -1,53 +1,37 @@
 "use client";
-
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { noAuthApiClient } from '@/services/api';
 
 const RegisterPage = () => {
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null); // Başarı durumu için state
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null); // Başlangıçta başarı mesajını temizle
     setIsLoading(true);
-
+    setError(null);
+    setSuccess(null);
     try {
-      console.log("Sending registration request...");
       await noAuthApiClient.post('/api/v1/auth/register', {
         username,
         email,
         password,
       });
-      
-      console.log("Registration successful. Setting success message and redirecting...");
-      setSuccess("Registration successful! Redirecting to login...");
-
-      // Yönlendirmeden önce kullanıcıya mesajı görmesi için kısa bir süre verelim.
+      setSuccess('Registration successful! Please login.');
       setTimeout(() => {
         router.push('/login');
-      }, 2000); // 2 saniye sonra yönlendir
-
+      }, 2000);
     } catch (err: any) {
-      console.error("Registration failed:", err);
-      if (err.response && err.response.data && err.response.data.detail) {
-        setError(err.response.data.detail);
-      } else {
-        setError('An unexpected error occurred. Please try again.');
-      }
+      setError(err.response?.data?.detail || 'An unexpected error occurred.');
     } finally {
-      // Başarılı durumda butonu tekrar aktif etmemek için
-      if (!success) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
 
@@ -81,7 +65,6 @@ const RegisterPage = () => {
               name="username"
               type="text"
               autoComplete="username"
-              required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-3 py-2 mt-1 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-300"
@@ -99,7 +82,6 @@ const RegisterPage = () => {
               name="email"
               type="email"
               autoComplete="email"
-              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 mt-1 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-300"
@@ -117,7 +99,6 @@ const RegisterPage = () => {
               name="password"
               type="password"
               autoComplete="new-password"
-              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 mt-1 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-300"

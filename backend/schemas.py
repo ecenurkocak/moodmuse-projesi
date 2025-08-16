@@ -13,7 +13,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    id: Optional[int] = None
 
 
 # ==============================================================================
@@ -107,6 +107,7 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     created_at: datetime.datetime
+    profile_image_url: Optional[str] = None
     mood_entries: List[MoodEntry] = []
 
     model_config = ConfigDict(from_attributes=True)
@@ -116,5 +117,11 @@ class UserResponse(UserBase):
     """Kullanıcı oluşturulduğunda veya getirildiğinde döndürülecek, hassas olmayan verileri içeren model."""
     id: int
     created_at: datetime.datetime
+    profile_image_url: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+class UserUpdate(BaseModel):
+    """Kullanıcı profilini güncellerken kullanılacak model. Alanlar opsiyoneldir."""
+    username: Optional[str] = Field(None, min_length=3, max_length=50)
+    bio: Optional[str] = Field(None, max_length=300)

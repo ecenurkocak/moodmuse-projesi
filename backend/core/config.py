@@ -2,21 +2,22 @@ import os
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Projenin ana dizinini (bu dosyanın iki üst dizini) bul
-# backend/core/config.py -> backend/ -> capstone/
-env_path = Path(__file__).parent.parent.parent / ".env"
+# backend/core/config.py -> backend/
+BACKEND_DIR = Path(__file__).parent.parent
+DATABASE_FILE = BACKEND_DIR / "db" / "moodmuse.db"
 
-# Eğer projenin ana dizininde .env yoksa, backend dizinine bak
-# Bu, dağıtım (deployment) senaryoları için esneklik sağlar
-if not os.path.exists(env_path):
-    env_path = Path(__file__).parent.parent / ".env"
+
+# .env dosyasının yolunu belirle
+# Önce projenin ana kök dizinine bakar (capstone/)
+env_path = BACKEND_DIR.parent / ".env"
+
 
 class Settings(BaseSettings):
     """
     Uygulama ayarlarını .env dosyasından yükler.
     """
     PROJECT_NAME: str = "MoodMuse"
-    DATABASE_URL: str = f"sqlite+aiosqlite:///{Path(__file__).parent.parent.parent / 'moodmuse.db'}"
+    DATABASE_URL: str = f"sqlite+aiosqlite:///{DATABASE_FILE.resolve()}"
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -37,7 +38,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     model_config = SettingsConfigDict(
-        env_file=str(env_path),  # pathlib.Path nesnesini string'e çevir
+        env_file=str(env_path),
         env_file_encoding='utf-8',
         extra='ignore'
     )

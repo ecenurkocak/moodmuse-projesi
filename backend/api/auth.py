@@ -1,21 +1,23 @@
 import logging
 import json
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Response
+import os
+import shutil
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Response, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from ..db import crud
-from ..core.config import settings
-from ..core.security import create_access_token, verify_password
-from ..core.ai_service import get_ai_suggestions
-from ..db.database import get_db
-from ..db.models import MoodEntry, Suggestion
-from ..schemas import (
+from backend.db import crud
+from backend.core.config import settings
+from backend.core.security import create_access_token, verify_password
+from backend.core.ai_service import get_ai_suggestions
+from backend.db.database import get_db
+from backend.db.models import MoodEntry, Suggestion
+from backend.schemas import (
     Token, TokenData, User, UserCreate, UserResponse, 
     HistoryResponse, AnalysisRequest, AnalysisResponse,
-    MoodEntryResponse
+    MoodEntryResponse, UserUpdate
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
@@ -38,19 +40,28 @@ async def get_current_user(
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        username: str | None = payload.get("sub")
-        if username is None:
+        # Token'dan kullanıcı ID'sini string olarak al
+        user_id_str = payload.get("sub")
+        if user_id_str is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+
+        # ID'yi integer'a çevirmeyi dene
+        try:
+            user_id = int(user_id_str)
+        except (ValueError, TypeError):
+            # Eğer çevirme başarısız olursa, token geçersizdir.
+            raise credentials_exception
+        
+        token_data = TokenData(id=user_id)
+        
     except JWTError:
         raise credentials_exception
-    
-    if token_data.username is None:
-        raise credentials_exception
 
-    user = await crud.get_user_by_username(db, username=token_data.username)
+    # Veritabanından kullanıcıyı ID ile getir.
+    user = await crud.get_user_by_id(db, user_id=token_data.id)
     if user is None:
         raise credentials_exception
+        
     return user
 
 
@@ -59,16 +70,30 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
 ):
+    logger.info(f"Login attempt for username: '{form_data.username}'")
     user = await crud.get_user_by_username(db, username=form_data.username)
-    if not user or not verify_password(
-        form_data.password, str(user.hashed_password)
-    ):
+    
+    if not user:
+        logger.warning(f"Login failed: User '{form_data.username}' not found in database.")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Kullanıcı adı veya şifre hatalı",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(data={"sub": user.username, "user_id": user.id})
+    
+    logger.info(f"User '{form_data.username}' found in database. Verifying password.")
+    
+    if not verify_password(form_data.password, str(user.hashed_password)):
+        logger.warning(f"Login failed: Password verification failed for user '{form_data.username}'.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Kullanıcı adı veya şifre hatalı",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    logger.info(f"Password verified for user '{form_data.username}'. Creating access token.")
+    # Token'ı oluştururken `sub` alanını string'e çevirerek tutarlılık sağla
+    access_token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -120,7 +145,7 @@ async def analyze_text_and_get_suggestions(
     suggestions = [
         Suggestion(
             suggestion_type="color",
-            content=json.dumps(ai_results.get("color_palette")),
+            content=",".join(ai_results.get("color_palette", [])),
         ),
         Suggestion(
             suggestion_type="music", 
@@ -187,3 +212,104 @@ async def delete_mood_entry(
     await crud.delete_mood_entry_by_id(db, mood_entry=mood_entry)
     await db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.put("/profile", response_model=UserResponse)
+async def update_user_profile(
+    user_update: UserUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Oturum açmış kullanıcının profilini günceller."""
+    logger.info(f"Updating profile for user ID: {current_user.id}")
+
+    # Yeni kullanıcı adının başka bir kullanıcı tarafından kullanılıp kullanılmadığını kontrol et
+    if user_update.username and user_update.username != current_user.username:
+        existing_user = await crud.get_user_by_username(db, username=user_update.username)
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Bu kullanıcı adı zaten kullanılıyor.",
+            )
+
+    try:
+        updated_user = await crud.update_user(db, user_id=current_user.id, user_update=user_update)
+        if not updated_user:
+            raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
+        
+        await db.commit()
+        await db.refresh(updated_user)
+        
+        logger.info(f"Successfully updated profile for user ID: {updated_user.id}")
+        return updated_user
+    except Exception as e:
+        logger.error(f"Error during profile update commit for user ID {current_user.id}: {e}", exc_info=True)
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Profil güncellenirken bir sunucu hatası oluştu.",
+        )
+
+@router.post("/users/me/upload-profile-image", response_model=UserResponse)
+async def upload_profile_image(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Oturum açmış kullanıcının profil fotoğrafını yükler."""
+    
+    # Dosya türü kontrolü
+    allowed_content_types = ["image/jpeg", "image/png", "image/gif"]
+    if file.content_type not in allowed_content_types:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Geçersiz dosya türü. Sadece JPEG, PNG veya GIF yükleyebilirsiniz.",
+        )
+        
+    # Dosya boyutu kontrolü (Örnek: 5MB)
+    max_file_size = 5 * 1024 * 1024  # 5 MB
+    if file.size > max_file_size:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Dosya boyutu çok büyük. Maksimum boyut {max_file_size / (1024*1024)}MB.",
+        )
+
+    upload_dir = "static/profile_images"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Güvenli bir dosya adı oluştur
+    file_extension = os.path.splitext(file.filename)[1]
+    file_name = f"{current_user.id}_{current_user.username}{file_extension}"
+    file_path = os.path.join(upload_dir, file_name)
+    
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    finally:
+        file.file.close()
+        
+    image_url = f"/static/profile_images/{file_name}"
+    
+    try:
+        updated_user = await crud.update_user_profile_image_url(
+            db, user_id=current_user.id, image_url=image_url
+        )
+        
+        if not updated_user:
+            # Bu durum normalde yaşanmamalı çünkü kullanıcıyı zaten get_current_user ile bulduk
+            raise HTTPException(status_code=500, detail="Kullanıcı güncelleme sırasında bulunamadı.")
+            
+        await db.commit()
+        await db.refresh(updated_user)
+        return updated_user
+    except Exception as e:
+        logger.error(f"Error during profile image update commit for user ID {current_user.id}: {e}", exc_info=True)
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Profil fotoğrafı güncellenirken bir sunucu hatası oluştu.",
+        )
+
+@router.get("/users/me", response_model=UserResponse)
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    """Oturum açmış olan kullanıcının bilgilerini döndürür."""
+    return current_user

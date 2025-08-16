@@ -6,13 +6,17 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import { getCurrentUser } from "@/services/api"; // API fonksiyonunu import et
 
 interface User {
   id: number;
   username: string;
+  email: string;
+  created_at: string;
+  profile_image_url?: string | null;
 }
 
 interface AuthContextType {
@@ -21,6 +25,7 @@ interface AuthContextType {
   loading: boolean;
   login: (token: string) => void;
   logout: () => void;
+  fetchUser: () => Promise<void>; // fetchUser'ı context type'ına ekle
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,38 +33,40 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Başlangıçta yükleme durumunu true yap
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+  const fetchUser = useCallback(async () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken: { sub: string; user_id: number } = jwtDecode(token);
-        setUser({ id: decodedToken.user_id, username: decodedToken.sub });
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Invalid token:", error);
-        localStorage.removeItem("token");
-        setUser(null);
-        setIsAuthenticated(false);
-      }
+    if (!token) {
+      setIsAuthenticated(false);
+      setUser(null);
+      setLoading(false);
+      return;
     }
-    setLoading(false); // Kontrol tamamlandığında yüklemeyi bitir
+
+    try {
+      const userData = await getCurrentUser();
+      setUser(userData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+      localStorage.removeItem("token");
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const login = (token: string) => {
     localStorage.setItem("token", token);
-    try {
-      const decodedToken: { sub: string; user_id: number } = jwtDecode(token);
-      setUser({ id: decodedToken.user_id, username: decodedToken.sub });
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error("Invalid token on login:", error);
-      // Hatalı token durumunda kullanıcı bilgisi ve kimlik doğrulama durumu sıfırlanır
-      setUser(null);
-      setIsAuthenticated(false);
-    }
+    setLoading(true);
+    fetchUser(); // Token'ı kaydettikten sonra kullanıcı verisini çek
   };
 
   const logout = () => {
@@ -70,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout, fetchUser }}>
       {children}
     </AuthContext.Provider>
   );

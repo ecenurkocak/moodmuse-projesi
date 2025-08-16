@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { queryRag } from '@/services/api';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
+import ReactMarkdown from 'react-markdown';
 
 const RagQueryCard = () => {
   const [question, setQuestion] = useState('');
@@ -31,43 +32,44 @@ const RagQueryCard = () => {
   };
 
   return (
-    <div className="mt-12 bg-white/10 backdrop-blur-md p-8 rounded-xl shadow-lg border border-white/20">
-      <h2 className="text-3xl font-bold text-center mb-6 text-text-main">
-        Ask the Mindfulness Expert
+    <div className="mt-10 bg-card/70 backdrop-blur-md p-8 rounded-xl shadow-lg border">
+      <h2 className="text-3xl font-bold text-center mb-6 text-foreground">
+        Ask Our AI Assistant
       </h2>
-      <form onSubmit={handleQuery}>
-        <div className="mb-4">
-          <label htmlFor="ragQuestion" className="block text-lg font-medium text-text-secondary mb-2">
-            What would you like to know about mindfulness or well-being?
+      <form onSubmit={handleQuery} className="space-y-4">
+        <div>
+          <label htmlFor="rag-query" className="block text-lg font-medium text-muted-foreground mb-2">
+            Do you have any questions about mental health topics?
           </label>
-          <Textarea
-            id="ragQuestion"
+          <input
+            id="rag-query"
+            type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="w-full h-28 p-4 text-black bg-white/10 border border-white/30 rounded-md shadow-sm focus:ring-purple-400 focus:border-purple-400 placeholder:text-gray-500 transition"
-            placeholder="e.g., How can I practice mindfulness during a busy day?"
-            required
+            className="w-full p-4 text-foreground bg-background/50 border rounded-md shadow-sm focus:ring-primary focus:border-primary placeholder:text-muted-foreground"
+            placeholder="e.g., How can I practice mindfulness?"
           />
         </div>
-        <Button
-          type="submit"
-          disabled={isLoading || !question}
-          className="w-full px-6 py-3 text-lg font-semibold"
+        <Button 
+          type="submit" 
+          disabled={isLoading} 
+          className="w-full px-6 py-3 text-lg font-semibold text-primary-foreground"
         >
           {isLoading ? 'Thinking...' : 'Ask'}
         </Button>
       </form>
 
       {error && (
-        <div className="mt-6 p-4 text-center text-red-400 bg-red-900/50 border border-red-500 rounded-lg">
+        <div className="mt-6 p-4 text-center text-destructive-foreground bg-destructive/80 border border-destructive rounded-lg">
           <p>{error}</p>
         </div>
       )}
 
       {answer && (
-        <div className="mt-8 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg animate-fade-in">
-          <h3 className="text-xl font-semibold mb-3 text-black">Answer:</h3>
-          <p className="text-black whitespace-pre-wrap">{answer}</p>
+        <div className="mt-6 p-6 bg-background/50 border rounded-lg">
+          <ReactMarkdown className="prose prose-invert max-w-none">
+            {answer}
+          </ReactMarkdown>
         </div>
       )}
     </div>

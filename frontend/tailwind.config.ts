@@ -9,15 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'bg-main': '#F8F7FA',         // Lavanta Sisi (Yeni)
-        'card-bg': '#FFFFFF',         // Saf Beyaz
-        'text-main': '#374151',       // Koyu Kurşun (Okunabilirlik için)
-        'text-secondary': '#6B7280',  // Gri
-        'primary': '#52277b',         // Yeni Ana Renk (Koyu Mor)
-        'primary-hover': '#422063',   // Yeni Ana Rengin Koyu Tonu
-        'border-color': '#E0BBE4',    // Thistle
-        'accent-violet': '#D291BC',   // Pastel Menekşe
-        'accent-pink': '#FEC8D8',     // Pamuk Şekeri
+        'bg-main': '#F8F7FA',
+        'card-bg': '#FFFFFF',
+        'text-main': '#374151',
+        'text-secondary': '#6B7280',
+        'primary': '#52277b',
+        'primary-hover': '#422063',
+        'border-color': '#E0BBE4',
+        'accent-violet': '#D291BC',
+        'accent-pink': '#FEC8D8',
       },
     },
   },

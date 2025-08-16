@@ -1,49 +1,39 @@
 "use client";
-
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { noAuthApiClient } from '@/services/api';
-import { useAuth } from '@/context/AuthContext'; // useAuth hook'unu import et
+import { useAuth } from '@/context/AuthContext'; 
 
 const LoginPage = () => {
-  const router = useRouter();
-  const { login } = useAuth(); // Context'ten login fonksiyonunu al
-  const [email, setEmail] = useState(''); // Backend username bekliyor, bu yüzden bunu username olarak göndereceğiz
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
-
-    const params = new URLSearchParams();
-    params.append('username', email); // FastAPI OAuth2PasswordRequestForm 'username' alanı bekliyor
-    params.append('password', password);
-
+    setError(null);
     try {
-      const response = await noAuthApiClient.post('/api/v1/auth/login', params, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
-      const { access_token } = response.data;
-      if (access_token) {
-        login(access_token); // Giriş başarılı olduğunda context'i token ile güncelle
-        router.push('/dashboard');
-      } else {
-        setError('Login failed: No token received.');
-      }
-
+      const response = await noAuthApiClient.post(
+        '/api/v1/auth/login',
+        new URLSearchParams({
+          username: email,
+          password: password,
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+      login(response.data.access_token);
+      router.push('/dashboard');
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.detail) {
-        setError(err.response.data.detail);
-      } else {
-        setError('An unexpected error occurred. Please try again.');
-      }
+      setError(err.response?.data?.detail || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +42,7 @@ const LoginPage = () => {
   return (
     <div className="flex items-center justify-center py-12">
       <div className="w-full max-w-md p-8 space-y-8 bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20">
+
         <h2 className="text-3xl font-bold text-center text-text-main">
           Login to MoodMuse
         </h2>
@@ -71,7 +62,7 @@ const LoginPage = () => {
             <input
               id="email"
               name="email"
-              type="text" // Hem username hem email ile giriş yapılabilmesi için text
+              type="text" 
               autoComplete="username"
               required
               value={email}
