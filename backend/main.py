@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from backend.db.database import Base, engine
-from backend.api import auth, rag  # rag modülünü import et
+from backend.api import auth
 
 # Static dosyalar için dizin oluştur
 os.makedirs("static/profile_images", exist_ok=True)
@@ -48,7 +48,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # API Rotalarını Dahil Et
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-app.include_router(rag.router, prefix="/api/v1/rag", tags=["RAG"]) # RAG router'ını ekle
 
 @app.get("/")
 def read_root():

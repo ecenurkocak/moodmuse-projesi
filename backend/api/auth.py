@@ -17,7 +17,7 @@ from backend.db.models import MoodEntry, Suggestion
 from backend.schemas import (
     Token, TokenData, User, UserCreate, UserResponse, 
     HistoryResponse, AnalysisRequest, AnalysisResponse,
-    MoodEntryResponse, UserUpdate
+    MoodEntryResponse, UserUpdate, ReasoningCreate, MoodEntryCreate # MoodEntryCreate'i import et
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
@@ -136,10 +136,15 @@ async def analyze_text_and_get_suggestions(
     if "error" in ai_results:
         raise HTTPException(status_code=500, detail=ai_results["error"])
 
-    db_mood_entry = MoodEntry(
-        text_input=request.text_input,
-        mood_label=ai_results.get("mood_label", "bilinmiyor"),
-        user_id=current_user.id
+    # CRUD fonksiyonunu yeni emoji parametresiyle çağır
+    db_mood_entry = await crud.create_mood_entry(
+        db=db,
+        mood_entry=MoodEntryCreate(
+            text_input=request.text_input,
+            mood_label=ai_results.get("mood_label", "bilinmiyor"),
+        ),
+        user_id=current_user.id,
+        emoji=request.emoji # Emoji'yi buradan geçir
     )
     
     suggestions = [
@@ -160,8 +165,10 @@ async def analyze_text_and_get_suggestions(
 
     db.add(db_mood_entry)
     await db.commit()
+    await db.refresh(db_mood_entry) # ID'yi almak için bu satır gerekli
 
     return AnalysisResponse(
+        mood_entry_id=db_mood_entry.id, # ID'yi yanıta eklemek gerekli
         color_palette=ai_results.get("color_palette"),
         spotify_playlist=ai_results.get("spotify_playlist"),
         inspirational_quote=ai_results.get("inspirational_quote"),
@@ -212,6 +219,39 @@ async def delete_mood_entry(
     await crud.delete_mood_entry_by_id(db, mood_entry=mood_entry)
     await db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.put("/history/{entry_id}/reasoning", response_model=MoodEntryResponse)
+async def add_reasoning_to_entry(
+    entry_id: int,
+    reasoning: ReasoningCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Belirli bir duygu girdisine 'neden' metnini ekler veya günceller."""
+    mood_entry = await crud.get_mood_entry_by_id(db, mood_entry_id=entry_id)
+    if not mood_entry:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Girdi bulunamadı."
+        )
+    if mood_entry.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu işlemi yapma yetkiniz yok.",
+        )
+
+    updated_entry = await crud.add_reasoning_to_mood_entry(
+        db, mood_entry=mood_entry, reasoning_text=reasoning.reasoning_text
+    )
+    
+    await db.commit()
+    await db.refresh(updated_entry)
+    
+    # Güncellenmiş girdiyi, ilişkili önerileriyle birlikte yeniden sorgula
+    final_entry = await crud.get_mood_entry_with_suggestions(db, mood_entry_id=updated_entry.id)
+    
+    return final_entry
+
 
 @router.put("/profile", response_model=UserResponse)
 async def update_user_profile(

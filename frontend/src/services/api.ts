@@ -61,13 +61,19 @@ export const deleteHistoryEntry = async (entryId: number): Promise<void> => {
   }
 };
 
-// RAG sorgusu için yeni fonksiyon
-export const queryRag = async (question: string): Promise<{ answer: string }> => {
+// Yeni fonksiyon: Bir duygu girdisine 'neden' metnini ekler
+export const addReasoningToEntry = async (
+  entryId: number,
+  reasoningText: string
+): Promise<any> => {
   try {
-    const response = await authApiClient.post('/api/v1/rag/query', { question });
+    const response = await authApiClient.put(
+      `/api/v1/auth/history/${entryId}/reasoning`,
+      { reasoning_text: reasoningText }
+    );
     return response.data;
   } catch (error) {
-    console.error('Error querying RAG:', error);
+    console.error(`Error adding reasoning to entry ${entryId}:`, error);
     throw error;
   }
 };
