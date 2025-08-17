@@ -3,6 +3,7 @@ from sqlalchemy import delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
+from typing import Optional
 
 from backend.db.models import User, MoodEntry, Suggestion
 from backend.schemas import UserCreate, MoodEntryCreate, SuggestionCreate, UserUpdate
@@ -78,12 +79,13 @@ async def update_user_profile_image_url(db: AsyncSession, user_id: int, image_ur
 
 
 async def create_mood_entry(
-    db: AsyncSession, mood_entry: MoodEntryCreate, user_id: int
+    db: AsyncSession, mood_entry: MoodEntryCreate, user_id: int, emoji: Optional[str] = None
 ) -> MoodEntry:
     """Yeni bir duygu girdisi oluşturur ve veritabanına kaydeder."""
     db_mood_entry = MoodEntry(
         **mood_entry.model_dump(),
         user_id=user_id,
+        emoji=emoji # Emoji'yi ekle
     )
     db.add(db_mood_entry)
     return db_mood_entry
@@ -140,6 +142,15 @@ async def delete_mood_entry_by_id(db: AsyncSession, mood_entry: MoodEntry) -> No
     
     # Ana girdiyi sil
     await db.delete(mood_entry)
+
+
+async def add_reasoning_to_mood_entry(
+    db: AsyncSession, mood_entry: MoodEntry, reasoning_text: str
+) -> MoodEntry:
+    """Bir duygu girdisine 'neden' metnini ekler veya günceller."""
+    mood_entry.reasoning_text = reasoning_text
+    db.add(mood_entry)
+    return mood_entry
 
 
 async def get_mood_entry_with_suggestions(

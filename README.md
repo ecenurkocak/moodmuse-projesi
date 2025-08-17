@@ -4,41 +4,42 @@
 
 ## 💡 Temel Özellikler
 - **Hibrit Yapay Zeka Mimarisi:**
-    - **Duygu Analizi:** Kullanıcı metinlerinden duygu durumunu tespit etmek için `text-generation-webui` aracılığıyla sunulan yerel bir dil modeli kullanılır. Bu, hızlı ve verimli bir ilk analiz sağlar.
-    - **İçerik Üretimi:** Tespit edilen duyguya özel, yaratıcı ve ilham verici motivasyon sözleri üretmek için **Google Gemini API**'sinden faydalanılır.
+    - **Duygu Analizi:** Kullanıcı metinlerinden duygu durumunu tespit etmek için `text-generation-webui` aracılığıyla sunulan yerel bir dil modeli kullanılır.
+    - **RAG Destekli Motto Üretimi:** Tespit edilen duyguya özel, **Google Gemini API**'si kullanılarak **kanıt-temelli** ve bağlam açısından zengin mottolar üretilir. Bu sistem, `LangChain` ve `ChromaDB` ile oluşturulmuş bir RAG (Retrieval-Augmented Generation) altyapısı ile güçlendirilmiştir.
 - **Kişiselleştirilmiş Öneriler:**
     - 🎨 **Dinamik Renk Paletleri:** `Colormind.io` API'si ile duygu durumuna uygun renk paletleri oluşturulur.
     - 🎵 **Spotify Entegrasyonu:** Kullanıcının ruh haline uygun Spotify çalma listeleri önerilir.
-- **RAG Bilgi Bankası:**
-    - 🧠 Mindfulness ve ruh sağlığı konularında soruları yanıtlayan, `LangChain` ve `ChromaDB` ile oluşturulmuş RAG tabanlı bir bilgi bankası içerir.
+- **Derinlemesine Duygu Kaydı:**
+    - 🤔 **"Nedenini Yaz" Özelliği:** Kullanıcılar, o anki ruh hallerinin arkasındaki nedenleri yazarak düşüncelerini kaydedebilir ve `Geçmiş` sayfasında görüntüleyebilir.
+    - 😀 **Emoji Etiketleri:** Her duygu kaydına o günü özetleyen bir emoji eklenebilir.
 - **Otomasyon & Bildirim:**
     - 💌 `APScheduler` ile haftalık olarak kullanıcıların duygu analizlerini içeren kişiselleştirilmiş e-posta raporları gönderilir.
 - **Modern ve Güvenli Altyapı:**
     - 🔐 JWT tabanlı güvenli kullanıcı kimlik doğrulama sistemi.
-    - 💾 `SQLite` ve `ChromaDB` (Vektör) ile veri saklama.
+    - 💾 `SQLite` (Alembic ile yönetilir) ve `ChromaDB` (Vektör) ile veri saklama.
     - 🧩 FastAPI ile oluşturulmuş modüler ve ölçeklenebilir backend yapısı.
 
 | Katman | Teknoloji / Servis | Amaç |
 | :--- | :--- | :--- |
 | **Frontend** | Next.js (TypeScript) | Kullanıcı arayüzü |
 | **Backend** | Python (FastAPI) | API sunucusu ve iş mantığı |
-| **Veritabanı**| SQLite, ChromaDB | Kullanıcı verileri ve vektör depolama |
+| **Veritabanı**| SQLite, ChromaDB, Alembic | Kullanıcı verileri, vektör depolama ve sürüm kontrolü |
 | **AI - Analiz** | `text-generation-webui` | Hızlı duygu tespiti (yerel model) |
-| **AI - Üretim** | Google Gemini API | Yaratıcı metin ve ilham sözü üretimi |
-| **AI - RAG** | `LangChain` | Bilgi bankası ve soru-cevap mantığı |
+| **AI - Üretim** | Google Gemini & RAG | Bağlamla zenginleştirilmiş motto üretimi |
+| **AI - RAG** | `LangChain`, `ChromaDB` | Gemini için kanıt ve stil sağlama |
 | **Kimlik Doğrulama** | JWT (`python-jose`) | Güvenli kullanıcı oturumları |
 | **Otomasyon** | `APScheduler` | Zamanlanmış görevler (haftalık e-posta) |
 
 
 ## 🧠 Yapay Zeka Mimarisi
 
-MoodMuse, iki farklı yapay zeka yaklaşımını birleştiren hibrit bir model kullanır:
+MoodMuse, üç aşamalı hibrit bir model kullanır:
 
-1.  **Yerel Model (`text-generation-webui`):** Hızlı ve anlık yanıt gerektiren **duygu analizi** gibi görevler için kullanılır. Kullanıcının girdiği metnin temel duygusunu (mutlu, üzgün, vb.) anında tespit eder. Bu, maliyeti düşürür ve temel analizler için yüksek bir hız sağlar.
-2.  **Bulut Tabanlı Model (Google Gemini):** Yaratıcılık ve derin anlamsal anlama gerektiren **ilham verici içerik üretimi** için kullanılır. Yerel modelden gelen duygu etiketi ve kullanıcının orijinal metni ile beslenerek daha kaliteli, bağlama uygun ve insan benzeri motivasyon cümleleri oluşturur.
-3.  **RAG (Retrieval-Augmented Generation):** Kullanıcıların belirli konulardaki sorularını yanıtlamak için kullanılır. Bu sistem, `LangChain` ile yönetilir ve `ChromaDB` vektör veritabanında saklanan özel bir bilgi havuzundan (PDF dokümanları) ilgili bilgileri çeker. Çekilen bu bilgiler, LLM'e bağlam olarak sunularak daha doğru ve güvenilir cevaplar üretilmesi sağlanır.
+1.  **Yerel Model (`text-generation-webui`):** Hızlı ve anlık yanıt gerektiren **duygu analizi** görevini üstlenir. Kullanıcının girdiği metnin temel duygusunu (mutlu, üzgün, vb.) anında tespit eder.
+2.  **RAG (Retrieval-Augmented Generation):** Bu sistem, `LangChain` ile yönetilir ve `ChromaDB` vektör veritabanında saklanan özel bir bilgi havuzundan (mindfulness, pozitif düşünce gibi konulardaki PDF'ler) ilgili bilgileri çeker. Bu aşamada, tespit edilen duyguya uygun **kanıt metinleri, örnek cümleler ve stil kuralları** toplanır.
+3.  **Bulut Tabanlı Model (Google Gemini):** RAG sisteminden gelen zengin bağlam (kanıt, örnekler, stil) ile beslenerek, sıradan bir ilham sözü yerine **daha kaliteli, kanıta dayalı ve kişiselleştirilmiş bir motto** üretir.
 
-Bu hibrit yapı, projenin hem hızlı ve verimli çalışmasını hem de yüksek kaliteli ve yaratıcı çıktılar sunmasını sağlar.
+Bu üç aşamalı yapı, projenin hem hızlı çalışmasını hem de sıradan metin üretimi yerine derinlikli ve anlamlı çıktılar sunmasını sağlar.
 
 ## 🚀 Kurulum ve Çalıştırma
 
@@ -90,18 +91,22 @@ GEMINI_API_KEY="google_gemini_api_anahtariniz" # Google AI Studio'dan alınan an
     pip install -r backend/requirements.txt
     ```
 
-3.  **Veritabanı Tablolarını Oluşturma:**
+3.  **Veritabanını Oluşturma ve Güncelleme:**
+    Veritabanı şemasını oluşturmak ve gelecekteki güncellemeleri yönetmek için Alembic kullanılır.
     ```bash
-    python -m backend.db.create_tables
+    # Projenin backend dizinindeyken
+    cd backend
+    alembic upgrade head
+    cd .. 
     ```
 
-4.  **Bilgi Bankasını Hazırlama (Veri Yükleme):**
-    RAG sisteminin çalışması için kaynak dokümanları işlemeniz gerekir.
+4.  **RAG Veritabanını Hazırlama (Veri Yükleme):**
+    Motto üretimi için kullanılacak kanıt metinlerini işlemeniz gerekir.
     ```bash
     # Projenin ana dizinindeyken
     python -m rag.ingest
     ```
-    Bu komut, `rag/source_documents` klasöründeki PDF'leri işleyecek ve `db/chroma` klasöründe veritabanını oluşturacaktır.
+    Bu komut, `rag/source_documents` klasöründeki PDF'leri işleyecek ve `rag/data` klasöründe ChromaDB veritabanını oluşturacaktır.
 
 5.  **Yerel Yapay Zeka Sunucusunu (text-generation-webui) Çalıştırma:**
     Duygu analizi özelliğinin çalışması için yerel dil modelini sunan sunucuyu başlatmanız gerekir. Bu komut, `mistral-7b-instruct-v0.2.Q4_K_M.gguf` modelini otomatik olarak yükleyecektir.
@@ -114,6 +119,7 @@ GEMINI_API_KEY="google_gemini_api_anahtariniz" # Google AI Studio'dan alınan an
 6.  **FastAPI Sunucusunu Başlatma:**
     Tüm servisler hazır olduğunda, ana backend sunucusunu başlatın.
     ```bash
+    # Projenin ana dizinindeyken
     uvicorn backend.main:app --reload
     ```
     Sunucu artık `http://127.0.0.1:8000` adresinde çalışıyor olmalı.
@@ -122,7 +128,7 @@ GEMINI_API_KEY="google_gemini_api_anahtariniz" # Google AI Studio'dan alınan an
 
 1.  **Gerekli Paketleri Yükleme:**
     ```bash
-    # Yeni bir terminal açın veya mevcut terminalde devam edin
+    # Yeni bir terminal açın ve projenin ana dizinindeyken
     cd frontend
     npm install
     ```
@@ -138,6 +144,4 @@ GEMINI_API_KEY="google_gemini_api_anahtariniz" # Google AI Studio'dan alınan an
 Pull request ve issue açarak projeye destek olabilirsin.
 Geri bildirimler benim için çok değerli! 💌
 **Created with 💖 by [@ecenurkocak](https://github.com/ecenurkocak)**
-
-:/
 

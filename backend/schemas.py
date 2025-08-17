@@ -58,6 +58,8 @@ class MoodEntryCreate(MoodEntryBase):
 class MoodEntryResponse(MoodEntryBase):
     id: int
     created_at: datetime.datetime
+    reasoning_text: Optional[str] = None
+    emoji: Optional[str] = None # YENİ ALAN
     suggestions: List[SuggestionResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
@@ -79,14 +81,20 @@ class HistoryResponse(BaseModel):
     data: list[MoodEntryResponse]
 
 
+class ReasoningCreate(BaseModel):
+    reasoning_text: str = Field(..., max_length=1000)
+
+
 class AnalysisRequest(BaseModel):
     text_input: str = Field(
         ...,
         description="The text input for which analysis is requested.",
     )
+    emoji: Optional[str] = Field(None, max_length=10) # YENİ ALAN
 
 
 class AnalysisResponse(BaseModel):
+    mood_entry_id: int # Bu alan frontend için gerekli
     color_palette: list[str]
     spotify_playlist: str
     inspirational_quote: str

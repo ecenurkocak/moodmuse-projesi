@@ -33,6 +33,8 @@ class MoodEntry(Base):
     id = Column(Integer, primary_key=True, index=True)
     text_input = Column(Text, nullable=False)
     mood_label = Column(String, nullable=False)
+    reasoning_text = Column(Text, nullable=True)
+    emoji = Column(String(10), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 

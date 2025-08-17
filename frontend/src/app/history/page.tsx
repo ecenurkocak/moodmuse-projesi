@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getHistory, deleteHistoryEntry } from '@/services/api';
 import { MoodEntry } from '@/lib/types';
-import { Trash2, Palette, Quote, ListMusic, ChevronLeft, ChevronRight, Loader2, ServerCrash, Inbox } from 'lucide-react';
+import { Trash2, Palette, Quote, ListMusic, ChevronLeft, ChevronRight, Loader2, ServerCrash, Inbox, MessageSquareQuote } from 'lucide-react';
 
 // Yardımcı Bileşenler
 
@@ -145,12 +145,28 @@ const HistoryPage = () => {
             <div key={entry.id} className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 flex flex-col justify-between p-6 transition-transform hover:scale-105">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <p className="text-sm text-text-secondary">{formatDate(entry.created_at)}</p>
+                  <div className="flex items-center gap-2">
+                    {entry.emoji && <span className="text-xl">{entry.emoji}</span>}
+                    <p className="text-sm text-text-secondary">{formatDate(entry.created_at)}</p>
+                  </div>
                   <button onClick={() => handleDeleteClick(entry.id)} className="text-gray-400 hover:text-red-500 transition-colors" title="Anıyı Sil">
                     <Trash2 size={20} />
                   </button>
                 </div>
                 <p className="text-text-main mb-4 italic">"{entry.text_input}"</p>
+                
+                {/* YENİ BÖLÜM: Reasoning Text - Tasarım sadeleştirildi ve iyileştirildi */}
+                {entry.reasoning_text && (
+                  <div className="mb-4 p-3 bg-purple-200/70 rounded-lg border-l-4 border-white/20">
+                    <div className="flex items-start space-x-3">
+                      <MessageSquareQuote size={18} className="text-text-secondary mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs text-text-secondary font-bold mb-1">My thoughts on why I felt this way:</p>
+                        <p className="text-sm text-text-main">{entry.reasoning_text}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="space-y-3">
                 {quote && (
