@@ -1,12 +1,12 @@
 import os
 import asyncio
 import re
-from langchain_openai import ChatOpenAI
 from typing import Dict, Any
 
-from core.config import settings
-from core.ai_service import generate_palette_from_colormind
-from core.spotify_service import get_spotify_access_token, search_spotify_playlist
+from backend.core.config import settings
+from backend.core.ai_service import generate_palette_from_colormind
+from backend.core.spotify_service import get_spotify_access_token, search_spotify_playlist
+from backend.core.gemini_service import generate_inspiration_with_gemini
 
 
 async def generate_content_for_mood(mood: str, user_text: str) -> Dict[str, Any]:
@@ -18,38 +18,45 @@ async def generate_content_for_mood(mood: str, user_text: str) -> Dict[str, Any]
         raise ValueError("Duygu durumu boş olamaz.")
 
     try:
-        llm = ChatOpenAI(
-            temperature=0.7,
-            openai_api_base=f"{settings.AI_SERVICE_URL}/v1",
-            openai_api_key="sk-111111111111111111111111111111111111111111111111",
-            model_name="local-model"
-        )
+        # llm = ChatOpenAI(
+        #     temperature=0.7,
+        #     openai_api_base=f"{settings.AI_SERVICE_URL}/v1",
+        #     openai_api_key="sk-111111111111111111111111111111111111111111111111",
+        #     model_name="local-model"
+        # )
         
         print(f"'{mood}' için e-posta içeriği üretiliyor...")
 
         # 1. Profesyonel Renk Paleti (Colormind API)
         color_palette_list = await generate_palette_from_colormind(mood)
         color_palette_str = ", ".join(color_palette_list)
-        print("Renk paleti üretildi.")
+        print(f"Renk paleti üretildi: {color_palette_str}")
 
         # 2. Kaliteli Alıntı (Yönlendirilmiş Prompt)
-        quote_prompt = f"""'{mood}' duygusuna uygun, kısa, dramatik olmayan, içten ve sade bir Türkçe motivasyon cümlesi üret.
-Sadece şu formatta yaz: Söz: "..." """
-        quote_response = await llm.ainvoke(quote_prompt)
-        content = quote_response.content.strip()
-        quote_match = re.search(r"Söz:\s*[\"'](.+?)[\"']", content)
-        quote = quote_match.group(1).strip() if quote_match else "Gelecek hafta daha iyi olacak!"
-        print("İlham sözü üretildi.")
+        print(f"Gemini için user_text: '{user_text}'")
+        quote = generate_inspiration_with_gemini(user_text)
+        print(f"Gemini'den gelen ilham sözü (raw): '{quote}'")
+        if not quote:
+            quote = "Bu hafta sana özel bir söz bulamadık ama gelecek hafta daha iyi olacak!"
+
+        print(f"Son ilham sözü: '{quote}'")
         
         # 3. Akıllı Spotify Listesi
+        print("Spotify erişim tokenı alınıyor...")
         spotify_token = await get_spotify_access_token()
-        spotify_url = "https://open.spotify.com/"
         if spotify_token:
+            print("Spotify erişim tokenı başarıyla alındı.")
             search_term = f"{mood} ruh hali müzik"
+            print(f"Spotify için arama terimi: '{search_term}'")
             playlist_url = await search_spotify_playlist(search_term, spotify_token)
+            print(f"Spotify'dan gelen playlist URL'si: '{playlist_url}'")
             if playlist_url:
                 spotify_url = playlist_url
-        print("Spotify listesi bulundu.")
+            else:
+                print("Spotify playlist bulunamadı, varsayılan URL kullanılıyor.")
+        else:
+            print("Spotify erişim tokenı alınamadı, varsayılan URL kullanılıyor.")
+        print(f"Son Spotify URL'si: {spotify_url}")
 
         return {
             "quote": quote,

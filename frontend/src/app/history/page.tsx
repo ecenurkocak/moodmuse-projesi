@@ -204,7 +204,7 @@ const HistoryPage = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 className="text-4xl font-bold text-center my-10 text-text-main">Duygu Arşivin</h1>
+      <h1 className="text-4xl font-bold text-center my-10 text-text-main">Mood History</h1>
       
       {renderContent()}
       
