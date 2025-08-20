@@ -29,7 +29,7 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
       
       {/* Renk Paleti */}
       <div>
-        <h3 className="text-2xl font-bold text-primary mb-4">Your Mood Palette</h3>
+        <h3 className="text-2xl font-bold text-primary mb-4">Mood Shades</h3>
         <div className="flex flex-wrap gap-4">
           {color_palette.map((color) => (
             <div key={color} className="relative group">
@@ -48,7 +48,7 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
       {/* Spotify Playlist */}
       {spotifyEmbedUrl && (
         <div>
-          <h3 className="text-2xl font-bold text-primary mb-4">Your Soundtrack</h3>
+          <h3 className="text-2xl font-bold text-primary mb-4">Mood Jams</h3>
           <div className="w-full overflow-hidden rounded-xl shadow-lg border border-border-color">
             <iframe
               src={spotifyEmbedUrl}
@@ -65,7 +65,7 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
 
       {/* İlham Verici Söz */}
       <div>
-        <h3 className="text-2xl font-bold text-primary mb-4">Quote of the Day</h3>
+        <h3 className="text-2xl font-bold text-primary mb-4">Mood Boost</h3>
         <blockquote className="relative p-4 border-l-4 border-primary bg-bg-main rounded-r-lg">
           <p className="text-xl italic text-text-secondary">
             "{inspirational_quote}"

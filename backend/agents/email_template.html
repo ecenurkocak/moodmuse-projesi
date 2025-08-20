@@ -107,27 +107,27 @@
             <h1>MoodMuse</h1>
         </div>
 
-        <h2>Merhaba {{ username }},</h2>
-        <p>İşte bu haftaki duygu özetin ve sana özel hazırladığımız ilham paketi:</p>
+        <h2>Hello {{ username }},</h2>
+        <p>Here’s your weekly mood summary and the personalized inspiration package we prepared for you:</p>
         
         <div class="mood-highlight">
-            <strong>Bu hafta en baskın hissettiğin duygu:</strong><br>
+            <strong>Your dominant mood this week:</strong><br>
             <span style="font-size: 1.2em; font-weight: 600;">{{ dominant_mood }}</span>
         </div>
         
-        <h3>Sana Özel Haftalık İlham Paketi</h3>
+        <h3>Your Weekly Inspiration Package</h3>
         
-        <h4>Haftanın Sözü</h4>
+        <h4>Quote of the Week</h4>
         <div class="quote-box">
             <p><em>"{{ quote }}"</em></p>
         </div>
         
-        <h4>Haftanın Çalma Listesi</h4>
-        <p>Ruh haline iyi gelecek şarkılar bir tık uzağında.</p>
-        <a href="{{ spotify_url }}" class="cta-button">Hemen Dinle</a>
+        <h4>Playlist of the Week</h4>
+        <p>Songs to match your mood are just one click away.</p>
+        <a href="{{ spotify_url }}" class="cta-button">Listen Now</a>
         
-        <h4>Haftanın Renkleri</h4>
-        <p>Bu haftaki hislerini yansıtan renkler:</p>
+        <h4>Colors of the Week</h4>
+        <p>These colors reflect how you’ve been feeling this week:</p>
         <div class="palette">
             {% for color in colors %}
             <div class="color-circle" style="background-color: {{ color }};"></div>
@@ -135,8 +135,8 @@
         </div>
         
         <div class="footer">
-            <p>Bu e-postayı, MoodMuse'a kayıt olduğun için aldın.</p>
-            <p>&copy; 2025 MoodMuse. Tüm hakları saklıdır.</p>
+            <p>You are receiving this email because you signed up for MoodMuse.</p>
+            <p>&copy; 2025 MoodMuse. All rights reserved.</p>
         </div>
     </div>
 </body>
