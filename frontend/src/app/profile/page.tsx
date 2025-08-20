@@ -126,7 +126,7 @@ const ProfilePage = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-text-main">
-      <h1 className="text-4xl font-bold text-center my-10">Profil Ayarları</h1>
+      <h1 className="text-4xl font-bold text-center my-10">Profile Settings</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
         <div className="md:col-span-1">
@@ -138,7 +138,7 @@ const ProfilePage = () => {
                         ) : user?.profile_image_url ? (
                           <Image
                             src={`${process.env.NEXT_PUBLIC_API_URL}${user.profile_image_url}`}
-                            alt="Profil Fotoğrafı"
+                            alt="Profile Picture"
                             width={96}
                             height={96}
                             className="object-cover w-full h-full"
@@ -152,7 +152,7 @@ const ProfilePage = () => {
                         className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                     >
                         <Upload className="w-6 h-6 text-white mb-1" />
-                        <span className="text-white text-xs text-center">Fotoğraf<br/>Değiştir</span>
+                        <span className="text-white text-xs text-center">Image<br/>Change</span>
                     </label>
                     <input 
                         type="file" 
@@ -164,15 +164,14 @@ const ProfilePage = () => {
                     />
                 </div>
                 <h2 className="text-2xl font-semibold text-text-main">@{displayName}</h2>
-                <p className="text-sm text-text-secondary mt-1">Katılma tarihi: {new Date(user.created_at).toLocaleDateString()}</p>
-                 <Button className="mt-4 w-full text-white">Profili Düzenle</Button>
+                <p className="text-sm text-text-secondary mt-1">Member Since: {new Date(user.created_at).toLocaleDateString()}</p>
             </div>
         </div>
 
         <div className="md:col-span-2 space-y-8">
           
           <form onSubmit={handleProfileUpdate} className="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold mb-4 text-text-main">Kimlik Bilgileri</h2>
+            <h2 className="text-2xl font-bold mb-4 text-text-main">Account Information</h2>
             
             {error && (
               <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-md mb-4 flex items-center">
@@ -189,82 +188,57 @@ const ProfilePage = () => {
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-text-secondary mb-1">Görünen Ad</label>
+                <label htmlFor="displayName" className="block text-sm font-medium text-text-secondary mb-1">Display Name</label>
                 <input id="displayName" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full p-2 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary"/>
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-1">E-posta Adresi</label>
+                <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-1">Email Address</label>
                 <div className="flex items-center space-x-2">
                   <input id="email" type="email" value={user.email} disabled className="w-full p-2 bg-white/5 border border-white/20 rounded-md text-text-secondary cursor-not-allowed"/>
-                  <Button type="button" variant="outline" className="text-white">Değiştir</Button>
+                  <Button type="button" variant="outline" className="text-white">Edit</Button>
                 </div>
               </div>
               <div>
-                <label htmlFor="bio" className="block text-sm font-medium text-text-secondary mb-1">Bio</label>
-                <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} className="w-full p-2 h-24 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary" placeholder="Kendinden bahset..."></textarea>
+                <label htmlFor="bio" className="block text-sm font-medium text-text-secondary mb-1">About Me</label>
+                <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} className="w-full p-2 h-24 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary" placeholder="Tell something about yourself..."></textarea>
               </div>
               <Button type="submit" disabled={isLoading} className="flex items-center justify-center text-white">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
+                {isLoading ? 'Kaydediliyor...' : 'Save Changes'}
               </Button>
             </div>
           </form>
 
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold mb-6 text-text-main">Tercihler</h2>
+            <h2 className="text-2xl font-bold mb-6 text-text-main">Preferences</h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">Dil</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Language</label>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant={language === 'TR' ? 'default' : 'outline'} onClick={() => setLanguage('TR')} className="text-white">Türkçe</Button>
+                  <Button variant={language === 'TR' ? 'default' : 'outline'} onClick={() => setLanguage('TR')} className="text-white">Turkish</Button>
                   <Button variant={language === 'EN' ? 'default' : 'outline'} onClick={() => setLanguage('EN')} className="text-white">English</Button>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">Tema</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Theme</label>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant={theme === 'Otomatik' ? 'default' : 'outline'} onClick={() => setTheme('Otomatik')} className="text-white">Otomatik</Button>
-                  <Button variant={theme === 'Aydınlık' ? 'default' : 'outline'} onClick={() => setTheme('Aydınlık')} className="text-white">Aydınlık</Button>
-                  <Button variant={theme === 'Karanlık' ? 'default' : 'outline'} onClick={() => setTheme('Karanlık')} className="text-white">Karanlık</Button>
+                  <Button variant={theme === 'Otomatik' ? 'default' : 'outline'} onClick={() => setTheme('Otomatik')} className="text-white">System Default</Button>
+                  <Button variant={theme === 'Aydınlık' ? 'default' : 'outline'} onClick={() => setTheme('Aydınlık')} className="text-white">Light</Button>
+                  <Button variant={theme === 'Karanlık' ? 'default' : 'outline'} onClick={() => setTheme('Karanlık')} className="text-white">Dark</Button>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold mb-6 text-text-main">Bildirimler</h2>
+            <h2 className="text-2xl font-bold mb-6 text-text-main">Notifications</h2>
             <div className="space-y-8">
-              {/* Sosyal Bildirimler */}
+             {/* Uygulama ve Güncellemeler */}
               <div>
-                <h3 className="text-lg font-semibold text-text-main mb-4">Sosyal Bildirimler</h3>
+                <h3 className="text-lg font-semibold text-text-main mb-4">App & Updates</h3>
                 <div className="space-y-4">
                   <NotificationSetting
-                    label="Biri beni takip ettiğinde"
-                    enabled={socialFollow}
-                    onEnabledChange={setSocialFollow}
-                    emailEnabled={socialFollowEmail}
-                    onEmailChange={setSocialFollowEmail}
-                    pushEnabled={socialFollowPush}
-                    onPushChange={setSocialFollowPush}
-                  />
-                  <NotificationSetting
-                    label="İçeriğime yorum yapıldığında"
-                    enabled={socialComment}
-                    onEnabledChange={setSocialComment}
-                    emailEnabled={socialCommentEmail}
-                    onEmailChange={setSocialCommentEmail}
-                    pushEnabled={socialCommentPush}
-                    onPushChange={setSocialCommentPush}
-                  />
-                </div>
-              </div>
-
-              {/* Uygulama ve Güncellemeler */}
-              <div>
-                <h3 className="text-lg font-semibold text-text-main mb-4">Uygulama ve Güncellemeler</h3>
-                <div className="space-y-4">
-                  <NotificationSetting
-                    label="Yeni özellikler ve duyurular"
+                    label="New features and announcements"
                     enabled={appUpdates}
                     onEnabledChange={setAppUpdates}
                     emailEnabled={appUpdatesEmail}
@@ -273,7 +247,7 @@ const ProfilePage = () => {
                     onPushChange={setAppUpdatesPush}
                   />
                   <NotificationSetting
-                    label="Haftalık aktivite özeti"
+                    label="Weekly activity summary"
                     enabled={appWeeklySummary}
                     onEnabledChange={setAppWeeklySummary}
                     emailEnabled={appWeeklySummaryEmail}
@@ -287,67 +261,56 @@ const ProfilePage = () => {
           </div>
           
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold mb-6 text-text-main">Güvenlik</h2>
+            <h2 className="text-2xl font-bold mb-6 text-text-main">Security</h2>
             <div className="space-y-8">
               {/* Parola Değiştir */}
               <div>
                 <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center">
-                  <KeyRound className="mr-2" /> Parola Değiştir
+                    <KeyRound className="mr-2" /> Change Password
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary mb-1">Mevcut Parola</label>
+                    <label className="block text-sm font-medium text-text-secondary mb-1">Current Password</label>
                     <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full p-2 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary" placeholder="••••••••" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-text-secondary mb-1">Yeni Parola</label>
-                    <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full p-2 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary" placeholder="Yeni parolanızı girin" />
+                    <div>
+                      <label className="block text-sm font-medium text-text-secondary mb-1">Yeni Parola</label>
+                    <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full p-2 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary" placeholder="Enter your new password" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary mb-1">Yeni Parolayı Doğrula</label>
-                    <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full p-2 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary" placeholder="Yeni parolanızı tekrar girin" />
+                    <label className="block text-sm font-medium text-text-secondary mb-1">Confirm New Password</label>
+                    <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full p-2 bg-white/10 border border-white/30 rounded-md text-text-main focus:ring-primary focus:border-primary" placeholder="Re-enter your new password" />
                   </div>
-                  <Button className="text-white">Parolayı Güncelle</Button>
+                  <Button className="text-white">Update Password</Button>
                 </div>
               </div>
 
               {/* İki Faktörlü Kimlik Doğrulama */}
               <div>
                 <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center">
-                  <QrCode className="mr-2" /> İki Faktörlü Kimlik Doğrulama (2FA)
+                  <QrCode className="mr-2" /> Two-Factor Authentication (2FA)
                 </h3>
                 <div className="p-4 rounded-lg bg-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between">
                   <div className="mb-3 sm:mb-0">
-                    <p className="text-text-main">Authenticator uygulaması ile hesabına ekstra bir güvenlik katmanı ekle.</p>
-                    <p className="text-sm text-text-secondary">Durum: <span className="font-semibold text-yellow-400">Aktif Değil</span></p>
+                    <p className="text-sm text-text-secondary">Status: <span className="font-semibold text-yellow-400">Not Active</span></p>
                   </div>
-                  <Button variant="outline" className="text-white">Etkinleştir</Button>
+                  <Button variant="outline" className="text-white">Enable</Button>
                 </div>
               </div>
 
               {/* Aktif Oturumlar */}
               <div>
-                <h3 className="text-lg font-semibold text-text-main mb-4">Aktif Oturumlar</h3>
-                <p className="text-sm text-text-secondary mb-4">Hesabınıza giriş yapılmış olan cihazların listesi.</p>
+                <h3 className="text-lg font-semibold text-text-main mb-4">Active Sessions</h3>
                 <div className="space-y-4">
                   <div className="p-4 rounded-lg bg-white/5 flex items-center justify-between">
                     <div className="flex items-center">
                       <Laptop className="w-6 h-6 mr-4 text-text-secondary" />
                       <div>
                         <p className="text-text-main">Chrome - İstanbul, Türkiye</p>
-                        <p className="text-sm text-green-400 font-semibold">Şu anki oturum</p>
+                        <p className="text-sm text-green-400 font-semibold">Current session</p>
                       </div>
                     </div>
-                  </div>
-                  <div className="p-4 rounded-lg bg-white/5 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Smartphone className="w-6 h-6 mr-4 text-text-secondary" />
-                      <div>
-                        <p className="text-text-main">iPhone 15 Pro</p>
-                        <p className="text-sm text-text-secondary">14 Ağu 2025</p>
-                      </div>
-                    </div>
-                    <Button variant="destructive" size="sm">Çıkış Yap</Button>
+                    <Button variant="destructive" size="sm">Log out</Button>
                   </div>
                 </div>
               </div>

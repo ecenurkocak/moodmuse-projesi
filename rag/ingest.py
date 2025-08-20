@@ -5,7 +5,7 @@ import uuid, glob, os
 from pypdf import PdfReader
 
 EMBED = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-DB = Client(Settings(persist_directory="rag/data", anonymized_telemetry=False))
+DB = Client(Settings(persist_directory="rag/chroma", anonymized_telemetry=False))
 COLL = DB.get_or_create_collection("moodmuse_rag")
 
 def chunk(txt, size=500, overlap=120):

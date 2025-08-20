@@ -28,36 +28,44 @@ async def get_spotify_access_token() -> str | None:
             print(f"Spotify token alınırken hata: {e}")
             return None
 
-async def search_spotify_playlist(mood: str, token: str) -> str | None:
+async def search_spotify_playlist(search_query: str, token: str) -> str | None:
     """
-    Verilen duyguya göre Spotify'da arama yapar, en alakalı çalma listelerini
+    Verilen arama sorgusuna göre Spotify'da arama yapar, en alakalı çalma listelerini
     puanlar ve en iyiler arasından rastgele birini seçer.
     """
     search_url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": f"Bearer {token}"}
     limit = 20
-    params = {"q": f"{mood}", "type": "playlist", "limit": limit}
+    params = {"q": f"{search_query}", "type": "playlist", "limit": limit}
     
     async with httpx.AsyncClient(timeout=SPOTIFY_TIMEOUT) as client:
         try:
             response = await client.get(search_url, headers=headers, params=params)
             response.raise_for_status()
-            playlists = response.json().get("playlists", {}).get("items", [])
+            
+            print(f"Spotify API yanıtı (status: {response.status_code}): {response.text}") # LOG: API yanıtı
+            playlists_data = response.json().get("playlists", {})
+            playlists = playlists_data.get("items", [])
+            print(f"Spotify API'den gelen çalma listeleri sayısı: {len(playlists)}") # LOG: çalma listesi sayısı
             
             if not playlists:
+                print("Spotify'da hiç çalma listesi bulunamadı.")
                 return "https://open.spotify.com/"
 
             scored_playlists = []
             for index, playlist in enumerate(playlists):
                 if not playlist:
                     continue
+                
+                # Playlist detaylarını logla
+                print(f"Playlist adı: {playlist.get('name')}, Sahibi: {playlist.get('owner', {}).get('display_name')}, URL: {playlist.get('external_urls', {}).get('spotify')}")
 
                 current_score = 0
                 owner = playlist.get("owner")
                 if owner and owner.get("display_name") == "Spotify":
                     current_score += 50
                 
-                if mood.lower() in playlist.get("name", "").lower():
+                if search_query.lower() in playlist.get("name", "").lower(): # mood yerine search_query kullan
                     current_score += 25
                     
                 current_score += (limit - index)
@@ -68,9 +76,14 @@ async def search_spotify_playlist(mood: str, token: str) -> str | None:
             top_candidates = scored_playlists[:5]
 
             if not top_candidates:
-                 return playlists[0].get("external_urls", {}).get("spotify")
+                 # En iyi adaylar boşsa, orijinal listelerden rastgele birini dene veya varsayılan dön
+                print("Puanlanmış en iyi adaylar bulunamadı, orijinal listelerden rastgele seçiliyor.")
+                if playlists:
+                    return random.choice(playlists).get("external_urls", {}).get("spotify")
+                return "https://open.spotify.com/"
 
             chosen_one = random.choice(top_candidates)["playlist"]
+            print(f"Seçilen playlist: {chosen_one.get('name')}") # LOG: seçilen playlist
             return chosen_one.get("external_urls", {}).get("spotify")
 
         except httpx.TimeoutException:

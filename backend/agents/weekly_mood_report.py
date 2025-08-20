@@ -11,10 +11,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select
 from sqlalchemy.future import select
 
-from db.database import AsyncSessionFactory
-from db.models import User, MoodEntry
+# from db.database import AsyncSessionFactory
+# from db.models import User, MoodEntry
+from backend.db.database import AsyncSessionFactory
+from backend.db.models import User, MoodEntry
+
 from sqlalchemy.orm import selectinload
-from core.config import settings
+from backend.core.config import settings
+from .content_agent import generate_content_for_mood # content_agent'tan import
 
 # E-posta gönderimi için SMTP ayarları config'den okunur
 SMTP_SERVER = "smtp.gmail.com"  # Genellikle sabit kalır
@@ -37,9 +41,11 @@ async def get_active_users_last_week(db: AsyncSession):
 
 async def get_dominant_mood_for_user(db: AsyncSession, user_id: int):
     """
-    Bir kullanıcının son 7 gündeki en baskın duygu durumunu döndürür.
+    Bir kullanıcının son 7 gündeki en baskın duygu durumunu ve buna ait en güncel metin girdisini döndürür.
     """
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    
+    # En baskın duygu etiketini bul
     dominant_mood_query = (
         select(MoodEntry.mood_label, func.count(MoodEntry.mood_label).label('mood_count'))
         .filter(MoodEntry.user_id == user_id, MoodEntry.created_at >= seven_days_ago)
@@ -48,8 +54,27 @@ async def get_dominant_mood_for_user(db: AsyncSession, user_id: int):
         .limit(1)
     )
     result = await db.execute(dominant_mood_query)
-    mood = result.first()
-    return mood[0] if mood else None
+    dominant_mood_result = result.first()
+
+    if not dominant_mood_result:
+        return None, None # Duygu bulunamazsa None döner
+
+    dominant_mood_label = dominant_mood_result[0]
+
+    # Baskın duygu etiketine ait en güncel text_input'ı bul
+    latest_entry_query = (
+        select(MoodEntry.text_input)
+        .filter(MoodEntry.user_id == user_id, 
+                MoodEntry.mood_label == dominant_mood_label, 
+                MoodEntry.created_at >= seven_days_ago)
+        .order_by(MoodEntry.created_at.desc())
+        .limit(1)
+    )
+    latest_entry_result = await db.execute(latest_entry_query)
+    user_text = latest_entry_result.scalar_one_or_none()
+    
+    return dominant_mood_label, user_text if user_text else ""
+
 
 def send_email(receiver_email: str, subject: str, html_content: str):
     """
@@ -105,14 +130,14 @@ async def send_weekly_mood_reports():
             print(f"Bu hafta {len(active_users)} aktif kullanıcı bulundu.")
             
             for user in active_users:
-                dominant_mood = await get_dominant_mood_for_user(session, user.id)
+                dominant_mood_label, user_text = await get_dominant_mood_for_user(session, user.id)
                 
-                if dominant_mood:
-                    print(f"Kullanıcı: {user.username}, Baskın Duygu: {dominant_mood}")
+                if dominant_mood_label:
+                    print(f"Kullanıcı: {user.username}, Baskın Duygu: {dominant_mood_label}")
                     
-                    generated_content = await generate_content_for_mood(dominant_mood)
+                    generated_content = await generate_content_for_mood(dominant_mood_label, user_text)
                     
-                    email_html = render_email_template(user.username, dominant_mood, generated_content)
+                    email_html = render_email_template(user.username, dominant_mood_label, generated_content)
                     
                     send_email(user.email, "Bu Haftaki Duygu Raporun Hazır!", email_html)
                 else:
