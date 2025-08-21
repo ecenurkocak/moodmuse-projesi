@@ -57,7 +57,7 @@ const LoginPage = () => {
               htmlFor="email"
               className="text-sm font-medium text-text-secondary"
             >
-              Username or Email
+              Username
             </label>
             <input
               id="email"
